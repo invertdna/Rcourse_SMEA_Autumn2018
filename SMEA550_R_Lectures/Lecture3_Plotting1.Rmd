@@ -1,0 +1,245 @@
+---
+title: 'Lecture 3: Plotting, Part 1 (base R)'
+author: "Kelly and Gallego"
+date: ""
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, eval=T)
+library(yarrr)
+library(dplyr)
+
+```
+
+One of the things people love about working in **R** is the ability to quickly make and change high-quality plots. And it's true!  Plotting is awesome and fun, and you will find yourself doing a bunch of it.  
+
+We'll look mainly at plotting with the main **R** graphics (called "base **R**"), and also briefly preview a different set of plotting tools called **ggplot2** (which has a totally different syntax that can be confusing, but that makes great graphics. ggplot2 is part of a larger suite of tools known as the *tidyverse* or *tidyR*, which is super useful but super different from base **R**, so we'll not mention it for now. Shhh...pretend we said nothing.)
+
+Here again, we'll use code from the *Pirate's Guide*, and annotate it as necessary.  
+
+####How to think about basic plotting in **R**
+
+* A plot is like a canvas, and you can only work on one canvas at a time
+* Some functions (like *plot()*) call entirely new canvases, others (like *points()*) add stuff to existing canvases
+* The important thing isn't the plot; it's the code that made the plot. You can always quickly make a new graphic if you have the code. 
+
+
+```{r basicplot}
+# A basic scatterplot
+plot(x = 1:10,  #this creates a vector from one to 10
+     y = 1:10,  #this does the same
+     xlab = "X Axis label",
+     ylab = "Y Axis label",
+     main = "Main Title")
+```
+
+Note that in the code we've specified the *x* and *y* variables (they are numeric vectors, in this case), and the *plot()* function knows we want to plot them against one another. 
+
+* If the vectors weren't the same length, what would happen?  
+
+```{r plotting error, error=TRUE}
+plot(y=1:10, x=1:11)
+```
+
+As seen above, it doesn't make any sense to plot two vectors against one another if they aren't the same length.
+
+Note also that you can use *plot()* by specifying *x* and *y*, as above `plot(x = 1:10, y=1:10)` OR equivalently by using formula notation `plot(y~x)` if we've already defined *x* and *y* somewhere else.  For example:
+
+```{r}
+x = seq(0,6.5, 0.1)  #this creates a numeric vector from 0 to 6.5 by increments of 0.1
+y = sin(x)  #this takes the sin(x)
+plot(y~x)
+```
+
+Note also -- as shown above -- that if you don't specify a title or *x* or *y* axis labels, that's OK... the plot just is a bit boring, but **R** still makes the plot for you.
+
+###Customizing plots
+
+####Scale
+
+You might want to play with the x- or y-scales.  Keeping our same plot as above, we can do this easily with the arguments *ylim()* and *xlim()* by providing a two-number vector: the min and max you want to see shown on the graph.
+
+```{r}
+plot(y~x, 
+     ylim=c(0,0.5), 
+     xlim=c(0,3)
+     )
+```
+
+####Plotting Character
+
+Now, let's say you want to plot in squares instead of circles. Sure. You can do that. Or filled circles.  Or whatever.  There's an argument for that, called *pch*, which stands for "plot character".  
+
+Using the code from the *Pirate's Guide*: 
+
+```{r echo = FALSE, fig.cap = "The symbol types associated with the pch plotting parameter.", fig.width = 3, fig.height = 3, fig.align= 'center'}
+par(mar  = c(1, 1, 3, 1))
+
+plot(x = rep(1:5 + .1, each = 5),
+     y = rep(5:1, times = 5),
+     pch = 1:25,
+     xlab = "", ylab = "", xaxt = "n", yaxt = "n",
+     xlim = c(.5, 5.5),
+     ylim = c(0, 6),
+     bty = "n", bg = "gray", cex = 1.4,
+     main = "pch = _"
+     )
+
+text(x = rep(1:5, each = 5) - .35,
+     y = rep(5:1, times = 5),
+     labels = 1:25, cex = 1.2
+     )
+```
+
+And you can even decide you want to plot using letters or other character strings, by giving *pch* a character instead of a numeral. For example, if today we really like the letter W...
+
+```{r}
+plot(y~x, 
+     pch="W"
+     )
+```
+
+####Color
+
+**R** has infinite color options; some are built-in, and you can generate new ones yourself.   To borrow again from the *Pirate's Guide*:
+
+>The easiest way to specify a color is to enter its name as a string. For example `col = "red"` is R's default version of the color red. Of course, all the basic colors are there, but R also has tons of quirky colors like `"snow"`, `"papayawhip"` and `"lawngreen"`. Figure \@ref(fig:randomcolors) shows 100 randomly selected named colors.
+
+```{r randomcolors, fig.width = 8, fig.height = 7, echo = FALSE, fig.cap="100 random named colors (out of all 657) in R."}
+set.seed(100)
+par(mar = c(0, 0, 0, 0))
+plot(1, xlim = c(0, 11), ylim = c(0, 11), 
+     type = "n", bty = "n", xaxt = "n", yaxt = "n", 
+     xlab = "", ylab = "")
+
+loc <- expand.grid(x = 1:10, y = 1:10)
+col.vec <- colors()[sample(1:length(colors()), size = 100)]
+
+for(i in 1:nrow(loc)) {
+  x.i <- loc$x[i]
+  y.i <- loc$y[i]
+  rect(x.i - .5, y.i - .5, 
+       x.i + .5, y.i + .5,
+       col = col.vec[i], border = "white")
+
+  text(x.i, y.i, labels = col.vec[i], cex = .6)
+}
+```
+
+
+> To see all 657 color names in R, run the code `colors()`. Or to see an interactive demo of colors, run `demo("colors")`.
+
+Some awesome people have created color palettes based on movies, directors, etc. The *wesanderson* set of palettes might be my favorite. For example:
+
+```{r}
+library(wesanderson)
+
+wes_palette("Zissou")  #show the colors in the wesanderson palette "Zissou"
+
+plot(y~x,
+     col=wes_palette("Zissou")[1],
+     pch=19) #make the sine plot, but using the first Zissou color and use solid circles as the plot character 
+abline(h=0,
+      col=wes_palette("Zissou")[5],
+      lwd = 2) #draw a horizontal line at y = 0, using a Zissou color
+abline(h=0.5,
+      col=wes_palette("Zissou")[3],
+      lwd = 2,
+      lty = 4) #draw a horizontal line at y = 0.5, using a Zissou color, and make it a dashed line (lty ... "for line type")
+abline(h=-0.5,
+      col=wes_palette("Zissou")[4],
+      lwd = 2,
+      lty = 4) #draw a horizontal line at y = -0.5, using a Zissou color, and make it a dashed line (lty ... "for line type")
+
+```
+
+####Many more parameters
+
+See ?par for the complete set of base **R** plotting parameters. You can change just about anything about a graph: font, margins, rotation of labels, etc.
+
+
+###Non-Scatterplots
+
+Life isn't all about scatterplots, of course.  Let's see some other useful kinds of plots, again quoting from the *Pirate's Guide*:
+
+
+>Histogram: `hist()`
+
+| Argument| Description| 
+|:------------|:-------------------------------------------------|
+|`x`|Vector of values|
+|`breaks`| How should the bin sizes be calculated? Can be specified in many ways (see `?hist` for details)|
+|`freq`| Should frequencies or probabilities be plotted? `freq = TRUE` shows frequencies, `freq = FALSE` shows probabilities.|
+|`col`, `border`| Colors of the bin filling (`col`) and border (`border`)|
+
+Table: (\#tab:hist) `hist()` function arguments
+
+>Histograms are the most common way to plot a vector of numeric data. To create a histogram we'll use the `hist()` function. The main argument to `hist()` is a `x`, a vector of numeric data. If you want to specify how the histogram bins are created, you can use the `breaks` argument. To change the color of the border or background of the bins, use `col` and `border`:
+
+>Let's create a histogram of the weights in the ChickWeight dataset:
+
+```{r}
+hist(x = ChickWeight$weight,
+     main = "Chicken Weights",
+     xlab = "Weight",
+     xlim = c(0, 500))
+```
+
+
+>We can get more fancy by adding additional arguments like `breaks = 20` to force there to be 20 bins, and `col = "papayawhip"` and `bg = "hotpink"` to make it a bit more colorful:
+
+
+
+```{r}
+hist(x = ChickWeight$weight,
+     main = "Fancy Chicken Weight Histogram",
+     xlab = "Weight",
+     ylab = "Frequency",
+     breaks = 20, # 20 Bins
+     xlim = c(0, 500),
+     col = "papayawhip", # Filling Color
+     border = "hotpink") # Border Color
+```
+
+
+If you want to plot two histograms on the same plot, for example, to show the distributions of two different groups, you can use the \texttt{add = TRUE} argument to the second plot. 
+
+```{r}
+hist(x = ChickWeight$weight[ChickWeight$Diet == 1],
+     main = "Two Histograms in one",
+     xlab = "Weight",
+     ylab = "Frequency",
+     breaks = 20,
+     xlim = c(0, 500),
+     col = gray(0, .5))
+
+hist(x = ChickWeight$weight[ChickWeight$Diet == 2],
+     breaks = 30,
+     add = TRUE, # Add plot to previous one!
+     col = gray(1, .8))
+```
+
+####And More
+
+You get the point.  For any plot you can imagine (and more), there's a way to do it in **R**.  People have created additional packages for things like *waffleplots* , *network diagrams* and all kinds of things. 
+
+###ggplot2
+
+We're going to look more at this in two weeks, but just as a quick preview, there are other packages for **R** that people have created to create graphics in different ways. One of those is *ggplot2*, which has different syntax, and can make cool things like this:
+
+```{r}
+library(ggplot2)
+levels(ChickWeight$Diet)<-c("Diet 1", "Diet 2", "Diet 3", "Diet 4")  #relabel Diet categories for clarity in graphing
+  ggplot(data = ChickWeight, aes(x=Time, y=weight, color=Chick))+
+    geom_line()+
+    facet_grid(~Diet)+
+    guides(color=guide_legend(ncol=4))+
+    labs(color="Chick")+
+    ggtitle("Chick Weight by Time and Diet")
+
+```
+
+
+
+

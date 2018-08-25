@@ -1,0 +1,54 @@
+\ProvidesPackage{RPK591Syllabus}
+
+%margins (note these are relative to the default of 1.75in all around)
+\addtolength{\oddsidemargin}{-.875in}
+\addtolength{\evensidemargin}{-.875in}
+\addtolength{\textwidth}{1.75in}
+\addtolength{\topmargin}{-.875in}
+\addtolength{\textheight}{1.75in}
+
+%indentation (if set at zero, paragraphs won't be indented)
+\setlength{\parindent}{0pt}
+
+%sets space between paragraphs (1em == length of one 'm' in current font)
+\setlength{\parskip}{0.2em}
+
+%one of several ways to control line spacing
+\renewcommand{\baselinestretch}{1}
+
+%additional packages
+\usepackage{url}
+\usepackage{hyperref}
+\usepackage{fancyhdr}
+\usepackage{marvosym}
+%\usepackage[document]{ragged2e}
+\usepackage{changepage}
+\usepackage{graphicx}
+\usepackage{wrapfig}
+\usepackage[usenames,dvipsnames,svgnames,table]{xcolor}
+\usepackage{hanging}
+\usepackage{eso-pic, rotating, graphicx} %for margin text
+\usepackage{multicol}
+\usepackage{titlesec}
+\usepackage{multicol}
+
+\urlstyle{sf} %sans serif URLs
+\usepackage{fontspec}
+	\setmainfont{Raleway Light}
+
+\newfontfamily\titlefont{Archer}
+
+\titleformat*{\subsection}{\vspace{2em}\centering\Large\titlefont}
+
+
+%page style\pagestyle{fancy}
+
+
+\lfoot{\textcolor{gray}{Last edited \today}} %rfoot, cfoot \renewcommand{\headrulewidth}{0pt}	% no bar on top of page\renewcommand{\footrulewidth}{0pt}	% bar on bottom of page
+
+%%for margin text
+%\usepackage{eso-pic, rotating, graphicx}
+%\AddToShipoutPicture{\put(25,120){\rotatebox{90}{\scalebox{1.5}{{\color{MidnightBlue} SMEA 591: Marine Science in the Coastal Zone}}}}}  %margin text
+%\AddToShipoutPicture{\put(25,600){\rotatebox{90}{\scalebox{1.5}{{\color{MidnightBlue} Winter 2018}}}}}  %margin text
+
+

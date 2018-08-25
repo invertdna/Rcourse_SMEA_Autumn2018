@@ -1,0 +1,362 @@
+---
+title: 'Lecture 2: Basic Computation and Stats'
+author: "Kelly and Gallego"
+date: ""
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, eval=T)
+library(yarrr)
+
+```
+
+###And how will all of this help me?
+
+You might be asking yourself: "I very rarely care to add vectors together or to create variables or to  do any of the things that **R** seems to be able to do. Why might I care?"
+
+To which we respond: you will be surprised.  You plot things all the time, right?  (If not, you should!) You often have questions like "Yes, I know that 5 seaplanes leave Lake Union normally, but yesterday there were 9. That seems like a lot... is it really a lot? Or might that just happen by chance?"  Or perhaps "I talked to 10 people at the Council meeting, and 3 were in favor of the proposal.  Is that more than I expected, given the polling numbers?"  **R** is your tool for these kinds of things.  And for plotting.  And all kinds of other fun stuff you haven't even thought about yet. 
+
+###So, first, trying to get to work
+
+**R** is a language, rather than a particular product. As a result, it can be confusing when people talk about how they work in with **R**.  You can write in any language using a plain text editor (such as Notepad++, Atom, BBedit, Textwrangler, or just the plain old notepad that came by default on your computer). But the text editor couldn't *run* the code... for that, you would need a program that speaks and executes the **R** language.  And wouldn't it be easier if you could write code, run that code, and visualize the code more easily?  I thought so.  That's why people use **R**-specific software to do it.  That software comes in a few flavors:
+
+* Command-line **R** can be run on a terminal (command-prompt) with plain text. For super-nerds. 
+* For the less-nerdy, the GUI (Graphical User Interface... i.e., where you can use a mouse and click on things) version of **R** is available on [CRAN](https://cran.r-project.org/) (CRAN stands for the Comprehensive R Archive Network, which is also where most contributed packages live). This is a big improvement for most people, but has in part been superseded by...
+* RStudio, which is an *Integrated Development Environment* (IDE), the idea of which is to keep everything all in one place: you can write code, run code, see plots, see what files are where, see what objects you've got loaded into an environment, etc... all on one screen.  That's why we're using RStudio.  
+
+But the point is that **R** is the language, and RStudio (or whatever you might otherwise choose... there are other options) is the environment in which you're using **R**.  
+
+####Some Vocabulary of Note:
+
+* *Rmarkdown* is a handy way of keeping code and plots and calculations and text and notes all in one place. The document you are reading now is written in Rmarkdown, and you'll write your problem sets, etc, the same way. The details don't matter, but just know that Rstudio is the way that you easily create Rmarkdown documents.  You can find the basics of Rmarkdown [here](https://rmarkdown.rstudio.com/authoring_basics.html) or in the cheatsheets provided in the files associated with our class. (Rmarkdown is itself a kind of [mini-language for formatting text](https://en.wikipedia.org/wiki/Markdown). Note that the tab character, and new lines, are important in *Rmarkdown* for formatting, in a way that they are generally ignored in the *R* language, so be careful.)
+
+* The *console* is where the action takes place in RStudio.  If you run code from the *source* window (which is your writing/editing space), you see the code being carried out in the *console*.  
+
+* Just so you know, you can create freestanding bits of code (*scripts*) that you can call from the command line, when you're more advanced. You run them like programs (which they are), without having to edit anything in Rstudio, etc.
+
+
+
+
+###Some basic math
+
+**R** is a calculator, among other things. It does what you'd expect. 
+
+```{r}
+3 + 2
+
+#or equivalently:
+sum(c(3,2))
+
+
+3*2
+
+
+sqrt(4)
+
+
+4^2
+
+#scientific notation, if that's your thing
+10e-3
+
+```
+
+...but you don't really need another calculator. Your phone can do these things. But can your phone do this? :
+
+
+###Handy Functions
+
+#### **summary()** 
+This gives -- you guessed it -- a summary of an object.  If you use it to summarize a numeric vector, you get something like this:
+
+```{r}
+summary(AirPassengers)  #a vector that is one of many datasets included in RStudio by default. Monthly Airline Passenger Numbers 1949-1960.
+```
+
+If you use **summary()** to summarize a data frame, you get 
+```{r}
+summary(CO2) #a dataframe of Carbon Dioxide Uptake in Grass Plants; contains some numeric data and some factors (named, discrete variables)
+```
+
+This is a quick way of seeing what's going on with your dataset. 
+
+####dim() and length()
+**dim()** gives the dimensions of your object; for example the number of rows and columns in a dataset. 
+
+**length** gives the length of a vector.
+
+Note in RStudio, the "environment" tab usually gives you this information, so you don't need to call the functions.
+
+```{r}
+#using the same example datasets as above:
+dim(CO2) #the dataframe has 82 rows and 5 columns
+
+dim(AirPassengers) #this doesn't work on vectors... 
+
+length(AirPassengers) #this is the equivalent for vectors.
+```
+
+####Subsetting and Indexing
+
+When you want to take a certain set of your data, but not the whole dataset, we call that *subsetting*. More generally, the idea that you can call particular elements by name or number is called *indexing*. For example, let's say you have a vector of 10 numbers (below).
+
+```{r}
+x <- c(1,5,7,2,8,10,3,8,5,4)
+x
+```
+
+Let's now say you wanted to grab the 7th number in the vector, and multiply it by 100.  We can do that using the notation `[]` where inside the square brackets is the *index* of the element you want to select. So if we want to select the 7th element in the vector *x*, we do that as follows:
+```{r}
+x[7]
+```
+
+And we can manipulate it as follows:
+```{r}
+x[7] * 100
+```
+
+Note that this doesn't change the stored version of the vector; if we want to do that, we have to store it explicitly. 
+
+```{r}
+x
+
+x[7] <- x[7]*100  #we just want to change the 7th element, and we do this explicitly
+
+x
+```
+
+If we want to see elements 3 through 10, we do it in a similar way; and we can even change the order in which the elements are shown to us.
+
+```{r}
+x[3:10] #shows elements 3 through 10
+
+x[c(4,7,2)]  #shows the 4nd, 7th, and 2nd elements in a vector
+```
+
+Here we've indexed by number, but you can do it by element name as well, shown below.
+
+
+#A Worked Example
+
+Here's why subsetting is useful: 
+
+Take the sample dataset (already installed) called *WorldPhones* (the number of telephones over time, by geography).  
+
+```{r}
+WorldPhones
+```
+
+Let's select and plot the growth of phone service in the Americas (overall).  First, we select the columns we care about:
+
+```{r}
+(Amers <- WorldPhones[,c("N.Amer", "S.Amer", "Mid.Amer")])
+```
+
+Note a few things here: 
+
+* First, you have to tell R that you want all rows for the selected columns. In general, we index dataframes by [rows, columns].  To select all rows for only some columns, you don't put a value in the rows spot, so it looks like this: [,columns].
+
+* Second, we selected columns by column name. We could have put in `WorldPhones[,c(1,4,7)]`, indexing by number, and gotten the same result. 
+
+* Third, we stored the subset dataframe in a variable called *Amers*.  And we printed the results to the screen at the same time by using a little trick: the whole expression was in parentheses. 
+
+* Forth, we created a vector `c("N.Amer", "S.Amer", "Mid.Amer")` to tell **R** we wanted to pull multiple columns from the dataset.  Most times you are giving **R** a set of things, you are going to use this notation. Here, it's a vector of character strings... the names of the columns.
+
+Now we want to sum across rows.  Fortunately, **R** has a built-in function to do that:
+
+```{r}
+(totals<-rowSums(Amers))
+```
+
+And finally, we want to plot this across years. But right now the years aren't stored as numbers... they are just the row names of the dataframe. We can check this, and it's true:
+
+```{r}
+is.numeric(row.names(Amers))
+```
+
+
+So we are going to *coerce* the row names into numeric values, as follows: 
+
+```{r}
+(years <- as.numeric(row.names(Amers)))
+```
+And now we can make our plot:
+
+```{r}
+plot(totals~years)
+```
+
+
+We can add a best-fit trendline if we are feeling saucy.  
+
+```{r}
+plot(totals~years)
+  abline(lm(totals~years), col="red")  #we'll do more of this soon;  lm is for linear model
+```
+
+
+##Reading-in and Writing-out data
+
+Let's go back to the *Pirate's Guide*:
+
+
+
+### read.table()
+
+
+>If you have a .txt file that you want to read into R, use the `read.table()` function.
+
+| Argument| Description| 
+|:------------|:-------------------------------------------------|
+|`file`| The document's file path relative to the working directory unless specified otherwise. For example `file = "mydata.txt"` looks for the text file directly in the working directory, while `file = "data/mydata.txt"` will look for the file in an existing folder called `data` inside the working directory.<br>If the file is outside of your working directory, you can also specify a full file path (`file = "/Users/CaptainJack/Desktop/OctoberStudy/mydata.txt"`) |
+|`header`|  A logical value indicating whether the data has a header row -- that is, whether the first row of the data represents the column names.|
+|`sep`|  A string indicating how the columns are separated. For comma separated files, use `sep = ","`, for tab--delimited files, use `sep = "\t"` |
+|`stringsAsFactors`|  A logical value indicating whether or not to convert strings to factors. I **always** set this to FALSE because I *hate*, *hate*, *hate* how R uses factors|
+
+
+>The three critical arguments to `read.table()` are `file`, `sep`, `header` and `stringsAsFactors`. The `file` argument is a character value telling R where to find the file. If the file is in a folder in your working directory, just specify the path within your working directory (e.g.; `file = data/newdata.txt`. The `sep` argument tells R how the columns are separated in the file (again, for a comma--separated file, use `sep = ","`}, for a tab--delimited file, use `sep = "\t"`. The `header` argument is a logical value (TRUE or FALSE) telling R whether or not the first row in the data is the name of the data columns. Finally, the `stringsAsFactors` argument is a logical value indicating whether or not to convert strings to factors (I *always* set this to FALSE!)
+
+>Let's test this function out by reading in a text file titled `mydata.txt`. Since the text file is located a folder called `data` in my working directory, I'll use the file path `file = "data/mydata.txt"` and since the file is tab--delimited, I'll use the argument `sep = "\t"`:
+
+```{r eval = FALSE}
+# Read a tab-delimited text file called mydata.txt 
+#  from the data folder in my working directory into
+#  R and store as a new object called mydata
+
+mydata <- read.table(file = 'mydata.txt',         # file is in my working directory
+                     sep = '\t',                  # file is tab--delimited
+                     header = TRUE,               # the first row of the data is a header row
+                     stringsAsFactors = FALSE)    # do NOT convert strings (i.e., "words" or text) to factors (i.e., categorical variables)
+```
+
+
+### Reading files directly from a web URL
+
+>A really neat feature of the `read.table()` function is that you can use it to load text files directly from the web (assuming you are online). To do this, just set the file path to the document's web URL (beginning with `http://`). For example, I have a text file stored at `http://goo.gl/jTNf6P`. You can import and save this tab--delimited text file as a new object called `fromweb` as follows:
+
+```{r}
+# Read a text file from the web
+fromweb <- read.table(file = 'http://goo.gl/jTNf6P',
+                      sep = '\t',
+                      header = TRUE)
+
+# Print the result
+fromweb
+```
+
+
+>I think this is pretty darn cool. This means you can save your main data files on Dropbox or a web-server, and always have access to it from any computer by accessing it from its web URL.
+
+
+#### Debugging {-}
+
+>When you run `read.table()`, you might receive an error like this:
+
+><div class="error">Error in file(file, "rt") : cannot open the connection</div>
+<div class="error">In addition: Warning message:</div>
+<div class="error">In file(file, "rt") : cannot open file 'asdf': No such file or directory</div>
+
+>If you receive this error, it's likely because you either spelled the file name incorrectly, or did not specify the correct directory location in the `file` argument.
+
+#### Excel, SPSS, and other data files
+
+>A common question I hear is "How can I import an SPSS/Excel/... file into R?". The first answer to this question I always give is "You shouldn't". **S**hitty **P**iece of **S**hitty **S**hit files can contain information like variable descriptions that R doesn't know what to do with, and Excel files often contain something, like missing rows or cells with text instead of numbers, that can completely confuse R.
+
+>Rather than trying to import SPSS or Excel files directly in R, I always recommend first exporting/saving the original SPSS or Excel files as text `.txt.` files -- both SPSS and Excel have options to do this. Then, once you have exported the data to a `.txt` file, you can read it into R using `read.table()`.
+
+>**Warning**: If you try to export an Excel file to a text file, it is a good idea to clean the file as much as you can first by, for example, deleting unnecessary columns, making sure that all numeric columns have numeric data, making sure the column names are simple (ie., single words without spaces or special characters). If there is anything 'unclean' in the file, then R may still have problems reading it, even after you export it to a text file.
+
+>If you absolutely *have* to read a non-text file into R, check out the package called `foreign` (`install.packages("foreign")`). This package has functions for importing Stata, SAS and SPSS files directly into R. To read Excel files, try the package `xlsx` (`install.packages("xlsx")`). But again, in my experience it's *always* better to convert such files to simple text files first, and then read them into R with `read.table()`.
+
+>There are many functions other than `read.table()` for importing data. For example, the functions `read.csv` and `read.delim` are specific for importing comma-separated and tab-separated text files. In practice, these functions do the same thing as `read.table`, but they don't require you to specify a `sep` argument. Personally, I always use `read.table()` because it always works and I don't like trying to remember unnecessary functions.
+
+
+##Writing Data Out
+
+And writing data to files is pretty much the same process. If you want to write out a table, for example, you could do it like this:
+
+```{r eval=FALSE}
+write.table(ChickWeight,                        #write a table consisting of the dataframe "ChickWeight"
+            file = "NewLocalFileCreated.txt",   #call the file this, and put it in the working directory
+            quote = FALSE,                      #do not put quotes around the values in the dataframe
+            sep = "\t",                         #use tabs to separate values, so it's tab-delimited
+            row.names = FALSE,                  #do not include the row-names in the written file
+            colnames = TRUE,                    #do include the column names
+            na = "NA")                          #for missing or otherwise invalid characters, use "NA"
+```
+
+
+Otherwise, if you want to save your R objects directly (rather than writing files as tables, etc), follow the *Pirate's Guide*:
+
+## .RData files
+
+>The best way to store objects from R is with `.RData files`. `.RData` files are specific to R and can store as many objects as you'd like within a single file. Think about that. If you are conducting an analysis with 10 different dataframes and 5 hypothesis tests, you can save **all** of those objects in a single file called `ExperimentResults.RData`. 
+
+### save()
+
+>To save selected objects into one `.RData` file, use the `save()` function. When you run the `save()` function with specific objects as arguments, (like `save(a, b, c, file = "myobjects.RData"`) all of those objects will be saved in a single file called `myobjects.RData`
+
+
+>For example, let's create a few objects corresponding to a study.
+
+```{r}
+# Create some objects that we'll save later
+study1.df <- data.frame(id = 1:5, 
+                        sex = c("m", "m", "f", "f", "m"), 
+                        score = c(51, 20, 67, 52, 42))
+
+score.by.sex <- aggregate(score ~ sex, 
+                          FUN = mean, 
+                          data = study1.df)
+
+study1.htest <- t.test(score ~ sex, 
+                       data = study1.df)
+```
+
+>Now that we've done all of this work, we want to save all three objects in an a file called `study1.RData` in the data folder of my current working directory. To do this, you can run the following
+
+```{r eval = FALSE}
+# Save two objects as a new .RData file
+#   in the data folder of my current working directory
+save(study1.df, score.by.sex, study1.htest,
+     file = "data/study1.RData")
+```
+
+
+>Once you do this, you should see the `study1.RData` file in the data folder of your working directory. This file now contains all of your objects that you can easily access later using the `load()` function (we'll go over this in a second...).
+
+
+### save.image()
+
+
+>If you have many objects that you want to save, then using `save` can be tedious as you'd have to type the name of every object. To save *all* the objects in your workspace as a .RData file, use the `save.image()` function. For example, to save my workspace in the `data` folder located in my working directory, I'd run the following:
+
+```{r, eval = FALSE}
+# Save my workspace to complete_image.RData in th,e
+#  data folder of my working directory
+save.image(file = "data/projectimage.RData")
+```
+
+>Now, the `projectimage.RData` file contains *all* objects in your current workspace.
+
+### load()
+
+
+>To load an `.RData` file, that is, to import all of the objects contained in the `.RData` file into your current workspace, use the `load()` function.  For example, to load the three specific objects that I saved earlier (`study1.df`, `score.by.sex`, and `study1.htest`) in `study1.RData`, I'd run the following:
+
+```{r eval = FALSE}
+# Load objects in study1.RData into my workspace
+load(file = "data/study1.RData")
+```
+
+
+>To load all of the objects in the workspace that I just saved to the data folder in my working directory in `projectimage.RData`, I'd run the following:
+
+```{r eval = FALSE}
+# Load objects in projectimage.RData into my workspace
+load(file = "data/projectimage.RData")
+```
+
+>I hope you realize how awesome loading .RData files is. With R, you can store all of your objects, from dataframes to hypothesis tests, in a single `.RData` file. And then load them into any R session at any time using `load()`.
+

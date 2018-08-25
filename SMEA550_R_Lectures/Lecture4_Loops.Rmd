@@ -1,0 +1,190 @@
+---
+title: 'Lecture 4: Loops and Related Iterations'
+author: "Kelly and Gallego"
+date: ""
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, eval=T)
+library(yarrr)
+library(dplyr)
+
+```
+
+Do you ever find yourself repeating yourself, doing the same thing over and over and over again, redundantly? **R** has a solution for you.  
+
+Picture this: You have some information that you've collected across different months of the year.  Let's say you've counted barnacles on rocks each month, and you have the following dataset (which we'll create here from scratch):
+
+```{r}
+set.seed(108)
+  AreaSampled <- round(runif(1200, min = 1, max = 100), 2)
+  Barnacles <- round(rnorm(n = 1200, mean = 1000, sd = 100)*AreaSampled, 0)
+  Month <- rep(1:12, each = 100)
+  Continent <- sample(c("Africa", "Asia", "Europe", "NAmerica", "SAmerica", "Australia", "Antarctica"), 1200, replace =T) 
+
+  myData <- data.frame(AreaSampled, Barnacles, Month, Continent)
+  
+  head(myData)
+```
+
+
+How might you find out about the relationship between barnacles and the area you sampled, and whether that is different during different months of the year or on different continents? 
+
+In Excel, you'd spend a day plotting different subsets of data. You'd make many graphs. Your wrist would be tired from using the mouse/trackpad.  
+
+With **R**, you can just write a loop: for every month, for example, run a new correlation 
+
+```{r}
+  results.vector <- c()                             #create an empty container in which to store results
+ for (i in 1:length(unique(myData$Month))){         #set up the loop; for each unique Month...
+    x <- myData$AreaSampled[myData$Month == i]      #create a subset of AreaSampled in that Month...
+    y <- myData$Barnacles[myData$Month == i]        #create a subset of Barnacles counted in that Month...
+  results.vector[i] <- cor(x, y)                    #calculate a correlation with cor(), and store that value
+  }
+
+results.vector  #and looking at the results, is there a trend over time?
+
+plot(y = results.vector, x = 1:12)  #no, doesn't look like it
+
+```
+
+The basic idea of a *for loop* is to do the same calculation (above, *cor()*) many times, while changing something about the data in each iteration.  It can be as simple as:
+```{r}
+for(i in 1:5){    #for each value of an iteration variable (here called "i", but it can be anything) between 1 and 5...
+  print(i)        #do this thing 
+}                 #and when you hit the closure bracket, go back and change the iteration variable to the next value in line, and start over. 
+```
+
+By convention, the *iteration variable* is often called *i* or *j* or *k*, but it can be whatever you want.  For example:
+
+```{r}
+for (YARRRR in 1:5){
+  print(YARRRR * 10)
+}
+```
+
+
+>And from the *Pirate's Guide*:
+
+## Creating multiple plots with a loop
+
+>One of the best uses of a loop is to create multiple graphs quickly and easily. Let's use a loop to create 4 plots representing data from an exam containing 4 questions. The data are represented in a matrix with 100 rows (representing 100 different people), and 4 columns representing scores on the different questions. The data are stored in the `yarrr` package in an object called `examscores`. Here are how the first few rows of the data look
+
+```{r}
+# First few rows of the examscores data
+head(examscores)
+```
+
+>Now, we'll loop over the columns and create a histogram of the data in each column.  First, I'll set up a 2 x 2 plotting space with `par(mfrow())` (If you haven't seen `par(mfrow())` before, just know that it allows you to put multiple plots side-by-side). Next, I'll define the `loop object` as `i`, and the `loop vector` as the integers from 1 to 4 with `1:4`. In the `loop code`, I stored the data in column `i` as a new vector `x`. Finally, I created a histogram of the object `x`!
+
+
+```{r}
+par(mfrow = c(2, 2))  # Set up a 2 x 2 plotting space
+
+# Create the loop.vector (all the columns)
+loop.vector <- 1:4
+
+for (i in loop.vector) { # Loop over loop.vector
+
+  # store data in column.i as x
+  x <- examscores[,i]
+  
+  # Plot histogram of x
+  hist(x,
+       main = paste("Question", i),
+       xlab = "Scores",
+       xlim = c(0, 100))
+}
+```
+
+That would have been a real pain in Excel.
+
+You can even do loops inside of loops (that is, across multiple variables), although professional programmers frown upon this because it is slow and there are usually better ways to do what you want to do.
+
+```{r}
+results <- matrix(NA, nrow=length(unique(myData$Continent)), ncol=length(unique(myData$Month)))
+  #create a matrix of the correct size
+
+for (i in 1: length(unique(myData$Continent))){  #indexing by name
+  for (j in 1:length(unique(myData$Month))){  #indexing by numerical index
+    
+    
+    x <- myData$AreaSampled[myData$Continent == unique(myData$Continent)[i] & myData$Month == j]
+    y <- myData$Barnacles[myData$Continent == unique(myData$Continent)[i] & myData$Month == j]
+    
+    results[i,j] <- cor(x, y)
+  } 
+}  
+
+#This gives you a matrix of correlation coefficients; it's easiest to look at that in the form of a heatmap
+heatmap(results, Rowv = NA, Colv = NA, labRow = unique(myData$Continent), xlab = "Month")
+
+```
+
+
+
+
+##lapply() and related
+
+**R** has a way of simplifying loops a bit, because they can get unwieldy.  
+
+rather than writing out 
+
+`for(i in 1:5){`
+`  print(i)`
+`}`
+
+you can write the following:  `lapply(1:5, print)` which does the same thing as the loop.  
+
+Here's how it works:  
+
+*lapply()* is part of a whole family of "apply" functions that differ in subtle ways.  The "l" in *lapply* is for "List", which is a data structure in **R** that we haven't talked about yet.  Just ignore that for a second  
+
+The code will look like this:  `lapply(x = SOME_VECTOR, FUN = SOME_FUNCTION)` , and executing this code just applies the specifed function to each value in the vector, and creates the output in a list. For example:
+
+```{r}
+
+lapply(myData, mean)  #give the average (mean) of each column in the dataset myData, which we created above.  The fourth column is Continent, so taking its average makes no sense, so the value returned is NA.
+
+```
+
+
+##Regarding Lists
+
+Here's what the *Pirate's Guide* has to say about Lists. 
+>A list is a special object in R that can store virtually *anything*. You can have a list that contains several vectors, matrices, or dataframes of any size. If you want to get really Inception-y, you can even make lists of lists (of lists of lists....).
+
+>Let's say you are conducting a loop where the outcome of each index is a vector. However, the length of each vector could change - one might have a length of 1 and one might have a length of 100. How can you store each of these results in one object? Unfortunately, a vector, matrix or dataframe might not be appropriate because their size is fixed. The solution to this problem is to use a `list()`.
+
+So a list can be handy for keeping things together in a single object, especially if those things are of different sizes.
+
+Remember indexing?  As in, you can get the 4th element of a vector using the notation `vectorname[4]`?  Lists work on the same principle. But since lists can have nested levels, you can have multiple indices.  For example:
+
+```{r}
+(myList <- list(a=c(1,2,3), b=c(7,8,9), c=11))  #see? the elements aren't the same length. And that's fine.
+```
+
+```{r}
+
+myList[1]  #gives the first element of the list, which is itself a vector of 3 numbers.
+
+myList$a  #you can also used named indices, which will just return the vector itself (not in list form)
+
+myList[[1]][2:3] #gives the second and third elements OF THE FIRST element of the list
+
+myList$a[2:3] #does the same thing
+
+```
+
+And if ever you want to pull things out of a list and make them into (say) a vector or a data.frame, 
+```{r}
+unlist(myList)  #this will do it
+
+as.data.frame(myList) #or you can try to coerce it to a specific class of object, like this, but you might get results you don't love. In this case, because the vectors in $A, $B, and $C weren't of the same length, R recycled the $C to match the length of the other two, so that it could create a dataframe with columns of equal length. So watch out for that.
+```
+
+
+OK, that's enough of lists... just know that you will run into them, and you should know what they are.
+
+
