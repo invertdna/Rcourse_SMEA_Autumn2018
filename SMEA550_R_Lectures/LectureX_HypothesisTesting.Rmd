@@ -1,0 +1,146 @@
+---
+title: 'Lecture X: Hypothesis Testing'
+author: "Kelly and Gallego"
+date: ""
+output: html_document
+---
+
+```{r, echo = F}
+library(yarrr)
+```
+
+
+Our job isn't to teach you stats; that's Sunny's job.  But our job IS to teach you how to do stats in **R**, if that's what you want to do.  And testing hypotheses is what that's all about.
+
+
+###Testing Hypotheses
+
+Hypothesis-testing forces you to be explicit about a question you're asking. 
+
+Classically, for example, you're taught the **t-test**. There, you're comparing two sets of numbers to one another, and asking if one is bigger than the other. But of course one is bigger than the other, unless they're the same. So you need a background expectation... a sense of how MUCH bigger one would have to be in order for you to think "Hey! That really _is_ bigger... not just a little, but actually (say... I don't know) _significantly_ bigger." A t-test lets you test the hypothesis that one set of numbers is bigger than the other, by comparing an observed difference to an expected difference. 
+
+So, classical hypothesis-testing entails:
+
+1. First, having a hypothesis [usually -- for philosophical reasons we can talk about -- your hypothesis is that there is no difference between what you observed and what you expected... this is usually called the "null" hypothesis. It is your neutral, background expectation. It is what should happen by chance alone, if nothing interesting in the world were happening.]
+2. Comparing your observation to a background expectation
+3. Then deciding to (provisionally) accept or reject your hypothesis, given your comparison of observed vs. expected. [e.g., is this difference so big that I think it really matters? Or is it just a little, trivial difference?]
+
+###Goddamn p-values
+You will note that we haven't used the term *p-value* here. Except, damn. We just did. [Side-rant: people put entirely too much emphasis on p-values, and so we are attempting to free your mind from these annoying constraints. But we can't ignore them entirely, because you will run into them, use them, etc.  So, in the interest of dealing with the world such as it is...]
+
+A p-value helps with this third step of testing a hypothesis: having compared observed and expected, is the difference between them so large that should I accept/reject my hypothesis?
+
+A p-value is the probability of getting the result you did *by chance alone* (i.e., under the null hypothesis). [More technically, a p-value is the probability of getting the statistical result (e.g., difference between group-means, in the case of a t-test) or greater, under the given null statistical distribution... but you can see why we are trying not to talk like this. It is confusing.]
+
+So, the larger your p-value, the more likely it is you are seeing a result you could have gotten by chance alone. 
+
+BUT! 
+
+* p-values have everying to do with sample size. Small numbers of samples mean it's hard to confidently discern differences between expected and observed, even if those differences are real. 
+* There is nothing magical about p = 0.05. It is an arbitrary threshold scientists of many disciplines have coalesced around, reasoning that if something is likely to happen by chance alone only 5% of the time, we are reasonably happy calling it a real effect (rather than chance).  But that doesn't mean p = 0.06 *isn't* a real effect, and it doesn't mean p = 0.04 *is*.  
+* p-values are not a measure of truth. See points above.
+* And more specifically, a p-value is NOT the probability that an alternative (non-null) hypothesis is true. See definition above.
+
+[End of rant]
+
+###Two-Sample t-test
+
+So, assuming you justifiably want to do a t-test, how would you do that in **R**?
+
+Let's take two sets of numbers, the length of pirate swords in Tortuga (`x`) and in Barbados (`y`). The t-test asks whether the means of these two are different, given their variance. 
+
+```{r}
+set.seed(49)  #for repeatability
+  x <- rnorm(25, mean = 10, sd = 2)  #draw 25 random numbers from a normal distribution with mean 10 and standard deviation 2
+  mean(x)
+  y <- rnorm(25, mean = 11, sd = 2)  #draw 25 random numbers from a normal distribution with mean 11 and standard deviation 2
+  mean(y)
+  
+#visualize these distributions in a histogram
+par(mfrow=c(2,1))
+    hist(x, breaks = 10, ylim = c(0,10), xlim = c(5,17))
+      abline(v=mean(x), col="red")
+    
+    hist(y, col="lightgrey", breaks = 10, ylim = c(0,10), xlim = c(5,17))
+      abline(v=mean(y), col="blue")
+```
+
+The mean of `y` is slightly higher than the mean of `x` , as we expect.  But is it statistically significantly different? 
+
+
+```{r}
+t.test(x, y)  #t-test is trivially easy to run in R; it's built-in.
+
+#note there are options for one-sample t-tests, one-tailed paired t-tests, etc.  see ?t.test
+
+```
+
+The results here provide the statistic (`t`), the p-value, a confidence interval, etc.  By default, the results are printed to the screen, but you can store the results in an object, if you want. 
+
+```{r}
+t.test.results <- t.test(x,y)
+```
+
+You can then grab elements of this object if you like. For example, if you just want the p-value, you can call `t.test.results$p.value`. 
+
+[Note here: the means of our samples really WERE different... they were 10 and 11, respectively.  Had our sample sizes been larger, we would have detected that difference with a p < 0.05.  This is a great illustration of the idea that p-values are not truth.]
+
+
+###Other tests of difference between two samples
+
+**R** has lots of built-in statistical tests. For example:
+
+```{r}
+wilcox.test(x,y)  #super useful; doesn't assume normal distributions
+
+ks.test(x, y)  #Kolmogorov-Smirnov test; similar. 
+
+#you get the point.
+```
+
+
+###Correlation and Linear Regression
+
+Perhaps the most common test of a hypothesis is one you don't necessarily think of as being a test.  You just want to know if two variables are correlated. [I know, I know. I'm using "regression" and "correlation" somewhat interchangably here. Correlation is when two things aren't causally linked... A goes up as B goes up, and we don't care why.  Regression is when we have specified some relationship between A and B, calling one "independent/predictor" and the other "dependent/response".  Fine. But they're pretty much the same thing as a practical matter.]
+
+This is one thing that Excel does well, in my opinion: it's easy to plot data, get the equation of the best-fit line, and even see the $R^2$ value if you want to.  **R** is less straightforward here, but more powerful in the sense that it lets you look under the hood. 
+
+Let's use some data from the `yarrr` package, called `diamonds`, and begin by looking at the relationship between value and weight. 
+
+```{r}
+plot (value~weight, data=diamonds)
+```
+
+It seems likely there's a relationship here, right?  [And further, it seems likely that weight influences value, and not the other way around, so weight is our independent/predictor variable, if you're keeping track.]
+
+If we just care about correlation -- rather than linear regression -- we're not trying to fit the equation of a line to the data, but rather asks whether the association between one variable and the other is greater than would be expected by chance alone. Then, we can just use `cor.test`. [Analogous to the built-in tests above.]
+
+```{r}
+cor.test(diamonds$weight, diamonds$value) #Pearson, by default, but Kendall and Spearman are also available. The give similar results.
+```
+
+If we care about the slope of the line, we want to fit a **linear model** to the data, using **R**'s `lm()` function.
+
+We do this in just the same way as we plot the data, but instead of `plot()`, we use `lm()`.  And we'll save the output to an object.
+
+```{r}
+lm.result <- lm(value~weight, data=diamonds)  #yvariable~xvariable is the formula
+summary(lm.result) #a useful way to look at the results
+```
+
+There's a lot of information here. For the moment, let's focus on `Coefficients`.  The first column of numbers gives you the estimates. So where the equation of a line is $y=\beta_{0}+\beta_{1}x_{1}+\beta_{2}x_{2}+...\beta_{n}x_{n}$
+
+these are the intercept ($\beta_{0}$) and the slope ($\beta_{1}$) of the line.  The 4th column `Pr(>|t|)` gives you the p-values for each of these.   The p-value for the slope is also repeated at the bottom of the output, for clarity.  
+
+You probably also care about the $R^2$ value for the best-fit line. That's given in English, toward the bottom of the output. ["Multiple R-squared" is an adjusted value that depends in part on the number variables in the model and the number of observations... let's ignore it for now, because we have only a single variable in our model.]
+
+So the slope of the best-fit line is y= `r round(coef(lm.result)[1],2)` + `r round(coef(lm.result)[2],2)`x, and this model explains about `r round(summary(lm.result)$r.squared,2)*100`% of the variance in the underlying data. 
+
+
+
+###Multiple Linear Regression
+
+###ANOVA
+  which is secretly the same thing as multiple linear regression!
+
+
