@@ -15,7 +15,9 @@ library(yarrr)
 
 You might be asking yourself: "I very rarely care to add vectors together or to create variables or to  do any of the things that **R** seems to be able to do. Why might I care?"
 
-To which we respond: you will be surprised.  You plot things all the time, right?  (If not, you should!) You often have questions like "Yes, I know that 5 seaplanes leave Lake Union normally, but yesterday there were 9. That seems like a lot... is it really a lot? Or might that just happen by chance?"  Or perhaps "I talked to 10 people at the Council meeting, and 3 were in favor of the proposal.  Is that more than I expected, given the polling numbers?"  **R** is your tool for these kinds of things.  And for plotting.  And all kinds of other fun stuff you haven't even thought about yet. 
+To which we respond: you will be surprised.  You plot things all the time, right?  (If not, you should!) You often have questions like "Yes, I know that 5 seaplanes leave Lake Union normally, but yesterday there were 9. That seems like a lot... is it really a lot? Or might that just happen by chance?"  Or perhaps "I talked to 10 people at the Council meeting, and 3 were in favor of the proposal.  Is that more than I expected, given the polling numbers?"  **R** is your tool for these kinds of things.  And for plotting... perhaps you want to plot the number of planes that take off each day of the month from Lake Union, and then you want to do that for each month of the year. Easy in **R**, hard in Excel.   
+
+And all kinds of other fun stuff you haven't even thought about yet. 
 
 ###So, first, trying to get to work
 
@@ -35,12 +37,71 @@ But the point is that **R** is the language, and RStudio (or whatever you might 
 
 * Just so you know, you can create freestanding bits of code (*scripts*) that you can call from the command line, when you're more advanced. You run them like programs (which they are), without having to edit anything in Rstudio, etc.
 
+###Packages : Extensions for **R**
+
+You already downloaded and loaded a package in **R** last week. But let's take a minute to see what that's all about. The *Pirate's Guide* says:
+
+>When you download and install R for the first time, you are installing the Base R software. Base R will contain most of the functions you'll use on a daily basis like `mean()` and `hist()`. However, only functions written by the original authors of the R language will appear here. If you want to access data and code written by other people, you'll need to install it as a *package*. An R package is simply a bunch of data, from functions, to help menus, to vignettes (examples), stored in one neat package.
 
 
+```{r package, fig.cap= "An R package is like a lightbulb. First you need to order it with install.packages(). Then, every time you want to use it, you need to turn it on with library()", fig.margin = TRUE, fig.align = 'center', echo = FALSE, out.width = "50%"}
+knitr::include_graphics(c("images/packagebulb.png"))
+```
+
+
+>A package is like a light bulb. In order to use it, you first need to order it to your house (i.e.; your computer) by *installing* it. Once you've installed a package, you never need to install it again. However, every time you want to actually use the package, you need to turn it on  by *loading* it. Here's how to do it.
+
+
+### Installing a new package
+
+>Installing a package simply means downloading the package code onto your personal computer. There are two main ways to install new packages. The first, and most common, method is to download them from the Comprehensive R Archive Network (CRAN). CRAN is the central repository for R packages. To install a new R package from CRAN, you can simply run the code `install.packages("name")`, where "name" is the name of the package. For example, to download the `yarrr` package, which contains several data sets and functions we will use in this book, you should run the following:
+
+
+```{r cran, fig.cap= "CRAN (Comprehensive R Archive Network) is the main source of R packages", fig.margin = TRUE, fig.align = 'center', echo = FALSE, out.width = "50%"}
+knitr::include_graphics(c("images/cran.png"))
+```
+
+
+
+
+```{r eval = FALSE}
+# Install the yarrr package from CRAN
+#   You only need to install a package once!
+install.packages("yarrr")
+```
+
+
+>When you run `install.packages("name")` R will download the package from CRAN. If everything works, you should see some information about where the package is being downloaded from, in addition to a progress bar.
+
+```{r installingpackages, fig.cap= "When you install a new package, you'll see some random text like this you the download progress. You don't need to memorize this.", fig.margin = TRUE, fig.align = 'center', echo = FALSE, out.width = "75%"}
+knitr::include_graphics(c("images/installingpackages.png"))
+```
+
+
+>Like ordering a light bulb, once you've installed a package on your computer you never need to install it again (unless you want to try to install a new version of the package). However, every time you want to use it, you need to turn it on by loading it.
+
+
+### Loading a package
+
+>Once you've installed a package, it's on your computer. However, just because it's on your computer doesn't mean R is ready to use it. If you want to use something, like a function or dataset, from a package you *always* need to *load* the package in your R session first. Just like a light bulb, you need to turn it on to use it!
+
+>To load a package, you use the `library()` function. For example, now that we've installed the `yarrr` package, we can load it with `library("yarrr")`:
+
+```{r, message = FALSE}
+# Load the yarrr package so I can use it!
+#   You have to load a package in every new R session!
+library("yarrr")
+```
+
+
+
+##USING *R*
+
+OK, back to us for a minute, away from the *Pirate's Guide*...
 
 ###Some basic math
 
-**R** is a calculator, among other things. It does what you'd expect. 
+**R** is a calculator, among other things. It does what you'd expect. [Note here that **R** has created a different syntax for these basic operations... the normal `function(argument)` syntax works, but so does `3 + 2`, because well... that just seems like it should work, no? And so the good people of **R** made it so.]
 
 ```{r}
 3 + 2

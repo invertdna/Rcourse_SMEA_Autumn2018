@@ -12,7 +12,7 @@ knitr::opts_chunk$set(echo = TRUE, eval=T)
 
 Why on Earth would you want to use **R**?  The learning curve is steep, and Excel is often easier -- at first -- for some routine tasks. But a little effort now will pay off big-time: learning a bit of coding in **R** will save you many, many hours if you are doing any kind of analysis. For example, generating 100 plots from 100 datasets is trivially easy in **R**, but would take days in Excel.  Making a histogram is an enormous pain in Excel, but is a single command in **R**.  But most of all, learning some **R** opens doors you didn't even know existed: you can write your own code, document your work, make work easily repeatable, and even present your analysis in an interactive web application (if you so desire).  All from within **R**.  So... here we go.
 
-OVERARCHING NOTE: The most important thing about analysis Has nothing to do with the computer. You have to know what you want to know, and why you want to know it. The computer isn’t magic. It will not tell you what you want to know unless you ask it precisely. So before even touching the keyboard, sit down with a pencil, draw your data, draw your question, and figure out what you want to know.
+OVERARCHING NOTE: The most important thing about analysis has nothing to do with the computer. You have to know what you want to know, and why you want to know it. The computer isn’t magic. It will not tell you what you want to know unless you ask it precisely. So before even touching the keyboard, sit down with a pencil, draw your data, draw your question, and figure out what you want to know.
 
 #A Few Ground Rules
 
@@ -25,13 +25,19 @@ OVERARCHING NOTE: The most important thing about analysis Has nothing to do with
 
 ### How **R** thinks
 * **R** stores objects in memory. You then manipulate and make use of these objects to do calculations, make plots, etc.
+
+#### Getting Information In
 * You can create these objects from scratch, but this is usually annoying... for example, have you ever tried to make a spreadsheet using just a plain text editor? You can do it, but why would you?  We are trying to make life easier, not harder. 
-* So mainly, you want to import data into **R** rather than entering stream-of-consciousness thoughts into its text editor. You can create a spreadsheet in Excel, for example, and then import it into R for analysis. As we will see. 
+* So mainly, you want to import data into **R** rather than entering stream-of-consciousness thoughts into its text editor. You can create a spreadsheet in Excel, for example, and then import it into R for analysis. As we will see.
+
+#### Categories of Information
 * When coding, it helps to think in categories. Excel doesn't make you do this: you can enter anything into a cell, and you don't necessarily care if it's a number, a word, etc. But the computer cares. You can't add up words the way you can add up numbers.
 * Consequently, **R** thinks about things in categories. If a value is a letter or a word, **R** calls it a *character*. If a value is a number, **R** calls it *numeric* (usually). If a value is TRUE or FALSE, **R** calls it *logical*.  There are a few more of these, but you get the point: **R** wants to know the KIND of thing that is stored in memory. These are called *modes* (You don't really need to know this term, but you should know the idea).  
 * Relatedly, **R** wants to know what kind of structure values are stored in. Objects stored in memory can only be one of a few kinds of things. The ones you're see most often are *scalars*, *vectors*, *data frames*, *matrices*, and *lists*.  (**R** calls these *classes*).
+
+#### Acting on Information
 * **R** carries out operations using *functions*.  You can think of functions as verbs, and objects as nouns.  
-* Functions  do something to an object to create some kind of output. (Functions require *arguments* to tell them what to do... often, these arguments will include an object on which to act, as well as some options).  The syntax is as follows: ``function_name(arguments)``, which tells **R** use the function ``function_name`` and apply it to these arguments.
+* Functions  do something to an object to create some kind of output. (Functions require *arguments* to tell them what to do... often, these arguments will include an object on which to act, as well as some options).  The syntax is as follows: ``function_name(arguments)`` , which tells **R** use the function ``function_name`` and apply it to these arguments. (Or, if you prefer, you can think of this as `verb(noun)`)
 * Side note: unlike some languages, **R** ignores spaces, such that `2+3` works just as well as `2 + 3`.  New lines and tabs are also generally ignored, but there are exceptions to this rule. **R** is always case-sensitive, so `MyData` is a totally different object than `Mydata`.  
 
 ###HELP!
