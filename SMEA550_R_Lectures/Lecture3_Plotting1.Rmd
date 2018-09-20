@@ -9,6 +9,7 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE, eval=T)
 library(yarrr)
 library(dplyr)
+library(wesanderson)
 
 ```
 
@@ -135,22 +136,22 @@ Some awesome people have created color palettes based on movies, directors, etc.
 ```{r}
 library(wesanderson)
 
-wes_palette("Zissou")  #show the colors in the wesanderson palette "Zissou"
+wes_palette("Zissou1")  #show the colors in the wesanderson palette "Zissou1"
 
 plot(y~x,
-     col=wes_palette("Zissou")[1],
-     pch=19) #make the sine plot, but using the first Zissou color and use solid circles as the plot character 
+     col=wes_palette("Zissou1")[1],
+     pch=19) #make the sine plot, but using the first Zissou1 color and use solid circles as the plot character 
 abline(h=0,
-      col=wes_palette("Zissou")[5],
-      lwd = 2) #draw a horizontal line at y = 0, using a Zissou color
+      col=wes_palette("Zissou1")[5],
+      lwd = 2) #draw a horizontal line at y = 0, using a Zissou1 color
 abline(h=0.5,
-      col=wes_palette("Zissou")[3],
+      col=wes_palette("Zissou1")[3],
       lwd = 2,
-      lty = 4) #draw a horizontal line at y = 0.5, using a Zissou color, and make it a dashed line (lty ... "for line type")
+      lty = 4) #draw a horizontal line at y = 0.5, using a Zissou1 color, and make it a dashed line (lty ... "for line type")
 abline(h=-0.5,
-      col=wes_palette("Zissou")[4],
+      col=wes_palette("Zissou1")[4],
       lwd = 2,
-      lty = 4) #draw a horizontal line at y = -0.5, using a Zissou color, and make it a dashed line (lty ... "for line type")
+      lty = 4) #draw a horizontal line at y = -0.5, using a Zissou1 color, and make it a dashed line (lty ... "for line type")
 
 ```
 

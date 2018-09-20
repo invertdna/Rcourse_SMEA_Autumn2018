@@ -23,6 +23,39 @@ OVERARCHING NOTE: The most important thing about analysis has nothing to do with
 
 #Jumping In
 
+### What is **R**?
+
+**R** is a computer language. And as a language, it has it own spelling and grammar rules. Learning both is what will take most of your time. It is also open software, so it is free and has millions of worldwide users that are creating their own *packages* and patronizing each other on the internet. 
+
+**R** is also the interface where you create your **R** commands or programs -called scripts. This is how the **R console** looks like on a Mac.
+
+![Basic R Console](images/Rconsole.png)
+
+Gives very little away. The most important thing is the sign **>** at the bottom of the screen, which means **R** is waiting for you to do something.
+
+### What is **RStudio**
+
+**RStudio** is a commercial software (although free for Academic / Research / leisure use) that allows you to have scripts, plots, the **R console** all at a glance. It is the friendliest way of using **R**, and also the coolest. This is how an **RStudio** Project looks like, again on a Mac.
+
+![RStudio](images/Rstudio.png)
+
+
+A lot more to see here, right? THe screenshot is that of me writing this lecture, in case you are into circular references.
+
+You will be using RStudio a lot, and you will be familiar with all these components.
+
+#### Setting up your work environment
+
+Open **RStudio**, and create a new Project. A Project is a way of keeping together all your R things that relate to a particular project. So click on the top right corner of your **RStudio** window and select *Create New Project*. Create a new directory (SMEA_R_course, try to avoid spaces if you can) for this class in your hardrive.
+
+Now you can follow up the lesson by creating a new script (so you can repeat everything later, "Lesson_1.r")
+
+A script is just a text file with **R** commads in it. You can add your own comments by adding the '#' sign and **R** will ignore the text after it.
+
+![RScript](images/Rscript.png)
+
+Now we can start
+
 ### How **R** thinks
 * **R** stores objects in memory. You then manipulate and make use of these objects to do calculations, make plots, etc.
 
@@ -45,7 +78,8 @@ OVERARCHING NOTE: The most important thing about analysis has nothing to do with
 No one remembers every function or every detail of coding in any language.  Use HELP early and often.  When you have a question about a particular function, type ``?function`` (replacing the word "function" with the name of the function you want to know about).  When you have a question about how to get something done in R, **Google it**.  Seriously. Someone has already done whatever you want to do, and has written about it on the web. 
 
 ###Examples:
-  
+
+
 ####Scalars  
   
 A scalar is just a single value, such as the number 1972.  We can create a new object to store this value, which we'll call *x*, which will then be a numeric scalar with the value 1972.  
