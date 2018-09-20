@@ -1,0 +1,180 @@
+---
+title: 'Lecture X: Data-Cleaning and Workplace Management'
+author: "Kelly and Gallego"
+date: ""
+output: html_document
+---
+<!-- \newcommand{\Q}[1]{><span style="color:darkblue">#1</span>} -->
+
+
+Let's be honest.  You've been meaning to get your shit together for years, and perhaps it hasn't happened yet. Your computer, like your desk at home -- do you even have a desk at home? -- is a mess.
+
+Your computer has files named `final_FINAL_analysis_reallyThisTime_USEthisONE3.docx` , and if you had to re-do a plot that you did a year ago, there's no way you could get that done.
+
+But now -- *NOW* -- is the time, my friends, to pull it together. The computer cannot think for you. The computer cannot guess what you really mean. The computer will do precisely what you tell it to, and nothing more. So part of learning a bit about coding is learning to think more like a computer. And part of this thinking, in turn, is learning to be more organized so that:
+
+* you can point to particular files in particular places
+* you can re-do analyses and get the exact same answer you did last time
+* you can plot and re-plot graphs as necessary, with ease
+* your future self can understand what your present self is doing
+
+<br>
+<br>
+
+The *Pirate's Guide* Says: 
+
+### Why object and file management is so important
+
+>Your computer is a maze of folders, files, and selfies. Outside of R, when you want to open a specific file, you probably open up an explorer window that allows you to visually search through the folders on your computer. Or, maybe you select recent files, or type the name of the file in a search box to let your computer do the searching for you. While this system usually works for non-programming tasks, it is a no-go for R. Why? Well, the main problem is that all of these methods require you to *visually* scan your folders and move your mouse to select folders and files that match what you are looking for. When you are programming in R, you need to specify *all* steps in your analyses in a way that can be easily replicated by others and your future self. This means you can't just say: "Find this one file I emailed to myself a week ago" or "Look for a file that looks something like `experimentAversion3.txt`." Instead, need to be able to write R code that tells R *exactly* where to find critical files -- either on your computer or on the web.
+
+>To make this job easier, R uses *working directories*. 
+
+
+##The working directory
+
+>The **working directory** is just a file path on your computer that sets the default location of any files you read into R, or save out of R. In other words, a working directory is like a little flag somewhere on your computer which is tied to a specific analysis project. If you ask R to import a dataset from a text file, or save a dataframe as a text file, it will assume that the file is inside of your working directory.
+
+>You can only have one working directory active at any given time. The active working directory is called your *current* working directory.
+
+>To see your current working directory, use `getwd()`:
+
+```{r, eval = TRUE}
+# Print my current working directory
+getwd()
+```
+
+
+>If you want to change your working directory, use the `setwd()` function. For example, if I wanted to change my working directory to an existing Dropbox folder called `yarrr`, I'd run the following code:
+
+```{r, eval = FALSE}
+# Change my working directory to the following path
+setwd(dir = "/Dropbox/yarrr")
+```
+
+<br>
+
+[And back to us, away from the *Pirate's Guide*]...
+
+##A Suggestion
+
+...So the working directory is like a "You Are Here" sign for **R**, pointing to the location of where things are happening -- and where files are -- as you're working right now. 
+
+To keep everything straight, for every project/assignment/class:
+
+* create one main folder (= directory, e.g. `mainFolder`) containing no spaces in the title and not starting with a number (computers hate that). 
+* inside that folder, create subfolders that remain consistent from project to project. For example, `mainFolder/Data` , `mainFolder/Analysis` , `mainFolder/Writing` ,  and `mainFolder/Figures`.
+* then, in **R**, you can keep your working analysis in the `/Analysis` folder, which uses raw data from the `/Data` folder, plots to the `/Figures` folder, etc.  And this hierarchy doesn't change from project to project... only the name of the main folder changes. So you don't get confused. 
+
+#Cleaning Your Data
+
+It's quite possible that alongside your magnum opus `final_FINAL_analysis_reallyThisTime_USEthisONE3.docx` you also have `revised_Data_RAW_processed_normalized2_rpk.xlsx`, which contains something like this. 
+
+`r knitr::include_graphics(c("../Images/Untidy_Sheet.pdf"))`
+
+You'll notice all kinds of things here... many of which are problematic for processing data.  For example:
+
+* a mix of numeric and non-numeric data within a column (should the computer treat this as a number, or not?)
+* formatting as data: what are bold values? what about those with colored backgrounds? (this formatting encodes information of some kind... but it will be lost if the formatting changes, and furthermore, my future self won't know what it means.)
+* a mix of missing-data values (do "VOID" and <blank> mean the same thing here?)
+* some values have notes attached to them (how should we handle this when importing data?)
+
+So, let's do some practice cleaning a dataset so we can work with it. A "clean" dataset is one that is ready for analysis, without problematic formatting or punctuation or craziness. For example, a computer sees these values differently: `" 0"`, `"0"`, `0`, `zero`, `Zero`, `none`.  In Excel, you (a human), might interpret those the same way, but the computer has no idea what to do with them.  (Note the first and second examples differ only by a space... which, when it's in a character string, is a character, even if it's invisible to the human eye. And the third element is a number, when the first two are characters.  See what I mean?  Data cleaning is important). 
+
+As a first step, I've opened a file in Excel, and saved as a .csv text file.  [There are other ways to do this, including reading directly into **R** from Excel using the package `readxl` , but for simplicity and universality, let's do it this way for now.]
+
+```{r}
+rawdata <- read.csv("../Data/field_samples.csv")
+
+names(rawdata)  #give the names of the columns
+
+#View(rawdata)  #take a look at the resulting dataframe
+
+```
+
+
+So... we've got a mix of things here, and some of the potential problems we identified in the screenshot earlier.
+
+Looking at the columns `date_collected` and `time`, should those be factors? They should probably be in some more useful format. And what about the temperature field `temp`? Shouldn't that be numeric?  Because it's not right now.  
+
+`r class(rawdata$date_collected); class(rawdata$time); class(rawdata$temp)`
+
+For example, say we want to know the change in water temperature over the days sampled.  We can't easily do that right now.
+
+```{r}
+plot(temp~date_collected, data=rawdata)
+```
+
+This gives us kind of a nonsense plot.  That's because we haven't cleaned our data properly, and we have the temperature variable being read as a factor, rather than as a number.  
+
+One way of cleaning your data would be to work in Excel and just fix the things you can see that are wrong.  For example, it's obvious that one of the numbers in the temperature variable isn't written as a number, but rather as a character string (it's in quotes), and that there are other issues with that same variable (it's got a mix of numbers and words):   
+
+```{r}
+rawdata$temp
+```
+
+But you can perhaps more easily (and more repeatably) do this in **R**, like so:
+
+```{r}
+cleandata <- rawdata  #first, we might want to create a duplicate dataframe to work from, calling this "cleandata"
+
+as.numeric(cleandata$temp) #this doesn't work, because the computer has no idea how to turn a mix of factors into numbers... so we need to do some substitution
+
+cleandata$temp <- gsub("HOBO broke", NA, cleandata$temp) #replace all instances of "HOBO broke" with NA, which denotes missing data 
+
+cleandata$temp <- gsub("\"", "", cleandata$temp) #replace all quotation marks with nothing.  [Here, we need to use the escape character (a backslash) to tell the computer that we're actually referring to the quotation mark itself rather than quoting something else... ]
+
+cleandata$temp <- as.numeric(cleandata$temp)  #now this works, because the data are all in a single, predictable format
+
+plot(temp~date_collected, data=cleandata) #this now makes more sense
+
+```
+
+```{r}
+#we can also tell R that the date_collected column is a date, rather than an unordered factor
+cleandata$date_collected <- as.Date(cleandata$date_collected)
+
+#which is useful for subsetting, putting things in order, etc
+
+boxplot(temp~date_collected,
+     data=cleandata[cleandata$date_collected<"2014-06-29",]) #just plot dates before June 29
+
+```
+
+###Never Repeat Yourself
+
+Humans are really good at being lazy.  So we have invented tools to avoid doing repetitive work. And sure, typing the same thing over and over again isn't as much work as, say, coal mining, but still.  
+
+So the rule-of-thumb is: if you find yourself repeatedly doing some task, you are doing it wrong. There is a tool to help you.  
+
+####Find-and-Replace
+
+We saw above the function `gsub` , which is extremely useful in this regard. [And note that the class of similar functions is called `regular expressions`, or `regexp` for short. This is true across many coding languages.]
+
+```{r}
+?gsub
+```
+
+A huge benefit of automatically substituting values is that the computer doesn't make mistakes. People do.
+
+####String Splitting
+
+Perhaps you have a bunch of labels called `mylabel_123`, and you want to use just part of that label, such as the `123`.  If you just have one, sure, you could just delete the first part of the label.  But if you have hundreds, you'd be doing the same operation many times.  Instead, you can use `strsplit` , which lets you split a string based upon a character you choose... here, we can choose the underscore:
+
+```{r}
+strsplit("mylabel_123", split = "_")
+```
+The output is a LIST with elements split by the character you've chosen.
+
+####Coersion
+
+Often in data-cleaning you have a value in one format and you want the computer to see it as a different format.  So, you've got `"0"` -- which the computer sees as a character -- and you want `0` -- which the computer sees as a number.  
+
+```{r}
+?as.numeric  #to make numeric
+?as.factor  #to make a categorical variable
+?as.character #to make a character string / word
+```
+
+
+
+
