@@ -167,7 +167,7 @@ Remember indexing?  As in, you can get the 4th element of a vector using the not
 
 ```{r}
 
-myList[1]  #gives the first element of the list, which is itself a vector of 3 numbers.
+myList[1]  #gives the first element of the list, which is itself a vector of 3 numbers. Confusingly enough, this is a list
 
 myList$a  #you can also used named indices, which will just return the vector itself (not in list form)
 

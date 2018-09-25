@@ -1,7 +1,7 @@
 ---
 title: "Lecture 1: Introduction"
 author: "Kelly, Gallego"
-date: "October 2, 2018"
+date: "September 26, 2018"
 output: html_document
 ---
 
@@ -40,7 +40,7 @@ Gives very little away. The most important thing is the sign **>** at the bottom
 ![RStudio](images/Rstudio.png)
 
 
-A lot more to see here, right? THe screenshot is that of me writing this lecture, in case you are into circular references.
+A lot more to see here, right? The screenshot is that of me writing this lecture, in case you are into circular references.
 
 You will be using RStudio a lot, and you will be familiar with all these components.
 

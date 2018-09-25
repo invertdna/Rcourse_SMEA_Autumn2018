@@ -128,6 +128,16 @@ cleandata$temp <- as.numeric(cleandata$temp)  #now this works, because the data 
 plot(temp~date_collected, data=cleandata) #this now makes more sense
 
 ```
+We looked at the dataset, and turns out we want to change the subsite_name for those with a "NA" value for center2. Let's try.
+
+```{r}
+
+cleandata$subsite_name[is.na(cleandata$subsite_name)] <- "center2"
+
+```
+And this is why factors are awful. They don't like new levels to be added to them. 
+
+
 
 ```{r}
 #we can also tell R that the date_collected column is a date, rather than an unordered factor
@@ -165,7 +175,28 @@ strsplit("mylabel_123", split = "_")
 ```
 The output is a LIST with elements split by the character you've chosen.
 
-####Coersion
+Sometimes you will want to separate the values of a column using special characters. I, for instance, generate the sample names for my projects using the format **St_YYYYMMDD_A**. That contains the Site or Station (St), the date of sampling and the replicate measurement (usually A, B C...). In R, you can easily split the sample name and retrieve these values: 
+
+```{r}
+
+strsplit(OA_Samples$Sample, "_") 
+
+```
+But, the output is a list with a variable number of elements. And wehat I had in mind is to create three new columns in the same dataframe, named Site,  Date, and Replicate.
+
+There is another tool to do this. Is called `separate`, and is part of the tidyverse, so we will dive into them later on. But as a taste, see how nicely it does things
+
+```{r str_split}
+
+separate(data = OA_Samples,# From the dataframe OA_Sampes
+         col = Sample, # Separate the column Sample
+         into = c("Site", "Date", "Replicate"), # into 3 columns (It will fill columns with NAs if there are only one or two values, and drop the rest if there are more than 3) 
+         sep = "_", # Separate with underscore
+         remove = F) # and Keep the original
+
+
+```
+####Coercion
 
 Often in data-cleaning you have a value in one format and you want the computer to see it as a different format.  So, you've got `"0"` -- which the computer sees as a character -- and you want `0` -- which the computer sees as a number.  
 
