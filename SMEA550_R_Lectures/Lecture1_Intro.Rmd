@@ -1,8 +1,10 @@
 ---
-title: "Lecture 1: Introduction"
+title: 'Lecture 1: Introduction'
 author: "Kelly, Gallego"
 date: "September 26, 2018"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}

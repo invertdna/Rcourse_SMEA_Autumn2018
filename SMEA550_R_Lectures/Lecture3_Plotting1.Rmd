@@ -45,13 +45,26 @@ plot(y=1:10, x=1:11)
 
 As seen above, it doesn't make any sense to plot two vectors against one another if they aren't the same length.
 
-Note also that you can use *plot()* by specifying *x* and *y*, as above `plot(x = 1:10, y=1:10)` OR equivalently by using formula notation `plot(y~x)` if we've already defined *x* and *y* somewhere else.  For example:
+Note also that you can use *plot()* by specifying *x* and *y*, as above `plot(x = 1:10, y=1:10)` OR equivalently by using formula notation `plot(y~x)`. If we've already defined *x* and *y* somewhere else, it's clear what to plot.  For example:
 
 ```{r}
 x = seq(0,6.5, 0.1)  #this creates a numeric vector from 0 to 6.5 by increments of 0.1
 y = sin(x)  #this takes the sin(x)
 plot(y~x)
 ```
+
+If we haven't defined the variables elsewhere, we can call them by specifying a dataframe that they came from.  For example:
+
+```{r}
+plot(height~weight, data=pirates)
+
+#or equivalently,
+
+plot(pirates$height~pirates$weight)
+
+```
+
+
 
 Note also -- as shown above -- that if you don't specify a title or *x* or *y* axis labels, that's OK... the plot just is a bit boring, but **R** still makes the plot for you.
 
@@ -62,9 +75,10 @@ Note also -- as shown above -- that if you don't specify a title or *x* or *y* a
 You might want to play with the x- or y-scales.  Keeping our same plot as above, we can do this easily with the arguments *ylim()* and *xlim()* by providing a two-number vector: the min and max you want to see shown on the graph.
 
 ```{r}
-plot(y~x, 
-     ylim=c(0,0.5), 
-     xlim=c(0,3)
+plot(height~weight, 
+     data=pirates, 
+     ylim=c(150,160), 
+     xlim=c(50,80)
      )
 ```
 
@@ -75,19 +89,19 @@ Now, let's say you want to plot in squares instead of circles. Sure. You can do 
 Using the code from the *Pirate's Guide*: 
 
 ```{r echo = FALSE, fig.cap = "The symbol types associated with the pch plotting parameter.", fig.width = 3, fig.height = 3, fig.align= 'center'}
-par(mar  = c(1, 1, 3, 1))
+par(mar  = c(1, 1, 3, 1))  #here, we are changing the margins, which you don't need to worry about yet
 
-plot(x = rep(1:5 + .1, each = 5),
-     y = rep(5:1, times = 5),
-     pch = 1:25,
-     xlab = "", ylab = "", xaxt = "n", yaxt = "n",
-     xlim = c(.5, 5.5),
-     ylim = c(0, 6),
-     bty = "n", bg = "gray", cex = 1.4,
-     main = "pch = _"
+plot(x = rep(1:5 + .1, each = 5),  #create an x vector by repeating some numbers 5 times each
+     y = rep(5:1, times = 5),      #same for y
+     pch = 1:25,      #plot characters 1 through 25 (this is to show you the different plot characters)
+     xlab = "", ylab = "", xaxt = "n", yaxt = "n",  #remove x and y axes and labels 
+     xlim = c(.5, 5.5),  #set the min/max x-axis limits
+     ylim = c(0, 6),    #set the min/max y-axis limits
+     bty = "n", bg = "gray", cex = 1.4,   #don't make a box around the figure, make the background gray, and make the plot characters 1.4 times their normal sizes
+     main = "pch = _"   #create a title 
      )
 
-text(x = rep(1:5, each = 5) - .35,
+text(x = rep(1:5, each = 5) - .35,   #now add text to that same plot to label each plotting character
      y = rep(5:1, times = 5),
      labels = 1:25, cex = 1.2
      )
@@ -96,9 +110,7 @@ text(x = rep(1:5, each = 5) - .35,
 And you can even decide you want to plot using letters or other character strings, by giving *pch* a character instead of a numeral. For example, if today we really like the letter W...
 
 ```{r}
-plot(y~x, 
-     pch="W"
-     )
+?
 ```
 
 ####Color
@@ -137,6 +149,9 @@ Some awesome people have created color palettes based on movies, directors, etc.
 library(wesanderson)
 
 wes_palette("Zissou1")  #show the colors in the wesanderson palette "Zissou1"
+
+x <- seq(0, 7, 0.01)  #create a sequence of numbers from 0 to 7 by units of 0.01
+y <- sin(x)  #calculate the sin(x)
 
 plot(y~x,
      col=wes_palette("Zissou1")[1],

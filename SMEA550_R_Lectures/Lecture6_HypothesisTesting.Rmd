@@ -8,6 +8,7 @@ output: html_document
 ```{r, echo = F, message=F}
 library(ggplot2)
 library(yarrr)
+library(dplyr)
 diamonds <- yarrr::diamonds  #to prevent conflict among packages; ggplot2 also has a dataframe called "diamonds"
 ```
 
@@ -217,7 +218,7 @@ anova.result <- aov(value ~ weight + clarity, data = diamonds)
     factors = row.names(as.data.frame(summary(anova.result)[[1]])),
     Rsquared =as.data.frame(summary(anova.result)[[1]])[,2] / total.variance
     )
-  SumSquares
+  
   sum(SumSquares[1:2, 2])  #the same Rsquared value we get from the multiple linear model
 
 ```
@@ -235,7 +236,99 @@ ggplot(diamonds, aes(y = value, x = weight, color = ClaritySet))+
 ```
 
 
+###Appendix: the package broom
+
+**R** is pretty good at doing models. But we can all agree that accessing the values of the model by typing `as.data.frame(summary(model.results)[[1]][,2])` is not very convenient and prone to errors. So there is this little package called `broom` and its main function `tidy`, which will make the model results directly into a dataframe, allowing you to access the term names, degrees of freedom and all statistics in a more intuitive fashion
+```{r broom tidy}
+
+#install.packages("broom") - do this the first time
+
+library(broom)
+
+tidy(anova.result)
+```
+
+Cool, eh! You can access the same operations we did before plus a few new ones. Sometimes the important information is not so much in the model you fit to the data, but in the residuals from each observation that went into the model. The function `augment` gives you all that information from the data points that were used to create the model
+```{r augment}
+
+anova.full <- augment(anova.result)
+
+anova.full
+```
+
+Having the fitted and residuals in a dataframe will allow for making plots of the residuals, to see if the model you fit performs differently at different values of the predictive variables. 
 
 
+```{r residuals plot}
 
+ggplot(anova.full, aes(y = .resid, x = weight, color = diamonds$ClaritySet))+
+  geom_point()
 
+ggplot(anova.full, aes(y = .resid, x = clarity, color = weight))+
+  geom_point()
+
+```
+
+A last function of the `broom` package is `glance`. This function calculates per-model statistics, such is their r-squared, AIC and so on
+
+```{r glance}
+
+glance(anova.result)
+
+```
+
+The main advantage of these functions is practicality - you already could do all those things in **R**, this is just easier to type and understand, and the output is in a friendlier format. With these three tools, we could run many different models on the same dataset, apply them to subsets of the data and compare the residuals, strength and p-values of the models.
+
+If this is something you are interested on using - we can explore how to iterate these techinques across different subgroups of your datasets, and comparing outputs from different models. As a taster, we can divide our dataset into two: training and testing. We will choose 70% of the observations to train our model and 30% of them to test it
+
+```{r divide diamonds}
+
+nrow(diamonds) #150
+set.seed(2) # so we all get the same results
+
+dvide <- sample (x = nrow(diamonds), # Create the vector of which samples go 
+                 size = 105,         # for training
+                 replace = FALSE)    # without replacing them
+
+diamonds[dvide,] -> training.dataset # 105 observations into training
+
+diamonds[-dvide,] -> test.dataset    # 45 observations into test
+
+```
+
+We can now generate the anova for the training dataset
+
+```{r training}
+
+anova.tr <- aov(value ~ weight + clarity, data =training.dataset )
+
+tidy (anova.tr)
+
+anova.training.points <- augment(anova.tr) 
+
+```
+
+And we can apply that model to the test dataset
+```{r augment with new data}
+
+anova.test <- augment (anova.tr, newdata = test.dataset)
+
+anova.test
+```
+
+So we can plot how the fitted and real values compare between the training and test dataset
+
+```{r plotting fitted vs real}
+
+bind_rows(anova.training.points,anova.test)
+
+ggplot( data = anova.training.points,
+        aes(x = value,
+            y = .fitted)) +
+  geom_point(color = "blue") +
+  geom_point (data = anova.test,
+              aes(x= value,
+                  y= .fitted),
+              color = "red")
+
+```

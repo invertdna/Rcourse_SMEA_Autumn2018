@@ -19,7 +19,7 @@ To which we respond: you will be surprised.  You plot things all the time, right
 
 And all kinds of other fun stuff you haven't even thought about yet. 
 
-###So, first, trying to get to work
+###So, to review: 
 
 **R** is a language, rather than a particular product. As a result, it can be confusing when people talk about how they work in with **R**.  You can write in any language using a plain text editor (such as Notepad++, Atom, BBedit, Textwrangler, or just the plain old notepad that came by default on your computer). But the text editor couldn't *run* the code... for that, you would need a program that speaks and executes the **R** language.  And wouldn't it be easier if you could write code, run that code, and visualize the code more easily?  I thought so.  That's why people use **R**-specific software to do it.  That software comes in a few flavors:
 
@@ -39,7 +39,7 @@ But the point is that **R** is the language, and RStudio (or whatever you might 
 
 ###Packages : Extensions for **R**
 
-You already downloaded and loaded a package in **R** last week. But let's take a minute to see what that's all about. The *Pirate's Guide* says:
+You already installed and loaded a package in **R** last week. But let's take a minute to see what that's all about. The *Pirate's Guide* says:
 
 >When you download and install R for the first time, you are installing the Base R software. Base R will contain most of the functions you'll use on a daily basis like `mean()` and `hist()`. However, only functions written by the original authors of the R language will appear here. If you want to access data and code written by other people, you'll need to install it as a *package*. An R package is simply a bunch of data, from functions, to help menus, to vignettes (examples), stored in one neat package.
 
@@ -158,7 +158,9 @@ dim(AirPassengers) #this doesn't work on vectors...
 length(AirPassengers) #this is the equivalent for vectors.
 ```
 
-####Subsetting and Indexing
+###Subsetting and Indexing
+
+####Numerical Indexing
 
 When you want to take a certain set of your data, but not the whole dataset, we call that *subsetting*. More generally, the idea that you can call particular elements by name or number is called *indexing*. For example, let's say you have a vector of 10 numbers (below).
 
@@ -195,7 +197,22 @@ x[3:10] #shows elements 3 through 10
 x[c(4,7,2)]  #shows the 4nd, 7th, and 2nd elements in a vector
 ```
 
-Here we've indexed by number, but you can do it by element name as well, shown below.
+Here we've indexed by number, but you can do it by element *name* as well, shown in the worked example below.
+
+###Dollar Sign 
+
+And in many contexts, the dollar sign is the most useful way of subsetting. When you want to take a single column of a dataframe, for example, and use it as a vector, this is the way to do it.  
+
+Let's say we want to just pull the number of treasure chests each pirate has, out of the `pirates` dataset.  
+
+```{r}
+pirates$tchests  #this is just that column of data.  And a single column of data is, by definition, a vector.  
+
+#we could then summarize this or plot it, or whatever...
+summary(pirates$tchests)
+
+```
+
 
 
 #A Worked Example
