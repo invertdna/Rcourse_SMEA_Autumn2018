@@ -1,11 +1,11 @@
 ---
-title: 'Lecture X: Hypothesis Testing'
+title: 'Lecture 6: Hypothesis Testing'
 author: "Kelly and Gallego"
 date: ""
 output: html_document
 ---
 
-```{r, echo = F, message=F}
+```{r, echo = F, message=F, include=F}
 library(ggplot2)
 library(yarrr)
 library(dplyr)
@@ -16,7 +16,7 @@ diamonds <- yarrr::diamonds  #to prevent conflict among packages; ggplot2 also h
 Our job isn't to teach you stats; that's Sunny's job.  But our job IS to teach you how to do stats in **R**, if that's what you want to do.  And testing hypotheses is what that's all about.
 
 
-###Testing Hypotheses
+### Testing Hypotheses
 
 Hypothesis-testing forces you to be explicit about a question you're asking. 
 
@@ -26,14 +26,14 @@ So, classical hypothesis-testing entails:
 
 1. First, having a hypothesis [usually -- for philosophical reasons we can talk about -- your hypothesis is that there is no difference between what you observed and what you expected... this is usually called the "null" hypothesis. It is your neutral, background expectation. It is what should happen by chance alone, if nothing interesting in the world were happening.]
 2. Comparing your observation to a background expectation
-3. Then deciding to (provisionally) accept or reject your hypothesis, given your comparison of observed vs. expected. [e.g., is this difference so big that I think it really matters? Or is it just a little, trivial difference?]
+3. Then deciding to (provisionally) accept or reject your hypothesis, given your comparison of what you observed vs. what you expected [i.e., is this difference so big that I think it really matters? Or is it just a little, trivial difference?]
 
-###Goddamn p-values
+### Goddamn p-values
 You will note that we haven't used the term *p-value* here. Except, damn. We just did. [Side-rant: people put entirely too much emphasis on p-values, and so we are attempting to free your mind from these annoying constraints. But we can't ignore them entirely, because you will run into them, use them, etc.  So, in the interest of dealing with the world such as it is...]
 
 A p-value helps with this third step of testing a hypothesis: having compared observed and expected, is the difference between them so large that should I accept/reject my hypothesis?
 
-A p-value is the probability of getting the result you did *by chance alone* (i.e., under the null hypothesis). [More technically, a p-value is the probability of getting the statistical result (e.g., difference between group-means, in the case of a t-test) or greater, under the given null statistical distribution... but you can see why we are trying not to talk like this. It is confusing.]
+A p-value is the probability of getting the result you did *by chance alone* (i.e., under the null hypothesis). [More technically, a p-value is the probability of getting the statistical result (e.g., difference between group-means in the case of a t-test) or greater -- given the standard errors of your samples -- under the given null statistical distribution... but you can see why we are trying not to talk like this. It is confusing.]
 
 So, the larger your p-value, the more likely it is you are seeing a result you could have gotten by chance alone. 
 
@@ -46,11 +46,11 @@ BUT!
 
 [End of rant]
 
-###Two-Sample t-test
+### Two-Sample t-test
 
 So, assuming you justifiably want to do a t-test, how would you do that in **R**?
 
-Let's take two sets of numbers, the length of pirate swords in Tortuga (`x`) and in Barbados (`y`). The t-test asks whether the means of these two are different, given their variance. 
+Let's take two sets of numbers, the length of pirate swords in Tortuga (which we'll call `x`) and in Barbados (`y`). The t-test asks whether the means of these two are different, given their variance. 
 
 ```{r}
 set.seed(49)  #for repeatability
@@ -89,7 +89,7 @@ You can then grab elements of this object if you like. For example, if you just 
 [Note here: the means of our samples really WERE different... they were 10 and 11, respectively.  Had our sample sizes been larger, we would have detected that difference with a p < 0.05.  This is a great illustration of the idea that p-values are not truth.]
 
 
-###Other tests of difference between two samples
+### Other tests of difference between two samples
 
 **R** has lots of built-in statistical tests. For example:
 
@@ -102,9 +102,9 @@ ks.test(x, y)  #Kolmogorov-Smirnov test; similar.
 ```
 
 
-###Correlation and Linear Regression
+### Correlation and Linear Regression
 
-Perhaps the most common test of a hypothesis is one you don't necessarily think of as being a test.  You just want to know if two variables are correlated. [I know, I know. I'm using "regression" and "correlation" somewhat interchangably here. Correlation is when two things aren't causally linked... A goes up as B goes up, and we don't care why.  Regression is when we have specified some relationship between A and B, calling one "independent/predictor" and the other "dependent/response".  Fine. But they're pretty much the same thing as a practical matter.]
+Perhaps the most common test of a hypothesis is one you don't necessarily think of as being a test.  You just want to know if two variables are correlated. [I know, I know. I'm using "regression" and "correlation" somewhat interchangably here. Correlation is when two things aren't causally linked... *A* goes up as *B* goes up, and we don't care why.  Regression is when we have specified some relationship between *A* and *B*, calling one "independent/predictor" and the other "dependent/response".  Fine. But they're pretty much the same thing as a practical matter.]
 
 This is one thing that Excel does well, in my opinion: it's easy to plot data, get the equation of the best-fit line, and even see the $R^2$ value if you want to.  **R** is less straightforward here, but more powerful in the sense that it lets you look under the hood. 
 
@@ -116,7 +116,7 @@ plot (value~weight, data=diamonds)
 
 It seems likely there's a relationship here, right?  [And further, it seems likely that weight influences value, and not the other way around, so weight is our independent/predictor variable, if you're keeping track.]
 
-If we just care about correlation -- rather than linear regression -- we're not trying to fit the equation of a line to the data, but rather asks whether the association between one variable and the other is greater than would be expected by chance alone. Then, we can just use `cor.test`. [Analogous to the built-in tests above.]
+If we just care about correlation -- rather than linear regression -- we're not trying to fit the equation of a line to the data, but rather asks whether the association between one variable and the other is greater than would be expected by chance alone. Then, we can just use `cor.test`. [Analogous to the built-in tests above, but making fewer assumptions about the data -- happy to discuss.]
 
 ```{r}
 cor.test(diamonds$weight, diamonds$value) #Pearson, by default, but Kendall and Spearman are also available. The give similar results.
@@ -161,7 +161,7 @@ predict(lm.result, newdata = data.frame(weight =c(190, 200 ,210)))
 
 
 
-####Plotting linear regressions
+#### Plotting linear regressions
 
 ... is pretty easy, but not as easy as in Excel.  First you plot the data, then you add the info from the linear model. 
 
@@ -181,7 +181,7 @@ plot (value~weight, data=diamonds,
 ``` 
 
 
-###Multiple Linear Regression
+### Multiple Linear Regression
 
 So we've answered the question of how diamond weight is associated with price.  
 
@@ -195,7 +195,7 @@ summary(mult.lm.result)  #here's the same output, but with another term... the e
 Plotting multiple linear regression makes little sense beyond 2 independent variables (which you can plot in 3 dimensions... but do you really need to?).  So we're not going to do it here. But the lesson is plain: multiple linear regression is super easy; you can just add a term to your existing `lm()`.
 
 
-###ANOVA (Analysis of Variance)
+### ANOVA (Analysis of Variance)
   Spoiler alert: ANOVA is secretly the same thing as multiple linear regression!  Why no one told me this for a couple of decades, I have no idea.  
   
 The idea behind the two techniques is the same, if you think about it:  
@@ -236,7 +236,7 @@ ggplot(diamonds, aes(y = value, x = weight, color = ClaritySet))+
 ```
 
 
-###Appendix: the package broom
+### Appendix (Which we will never have time for in class, but in which you might be interested): the package broom
 
 **R** is pretty good at doing models. But we can all agree that accessing the values of the model by typing `as.data.frame(summary(model.results)[[1]][,2])` is not very convenient and prone to errors. So there is this little package called `broom` and its main function `tidy`, which will make the model results directly into a dataframe, allowing you to access the term names, degrees of freedom and all statistics in a more intuitive fashion
 ```{r broom tidy}
@@ -248,12 +248,12 @@ library(broom)
 tidy(anova.result)
 ```
 
-Cool, eh! You can access the same operations we did before plus a few new ones. Sometimes the important information is not so much in the model you fit to the data, but in the residuals from each observation that went into the model. The function `augment` gives you all that information from the data points that were used to create the model
+Cool, eh? You can access the same operations we did before plus a few new ones. Sometimes the important information is not so much in the model you fit to the data, but in the *residuals* (that is, the remainder of the data NOT explained by your model parameters) from each observation that went into the model. The function `augment` gives you all that information from the data points that were used to create the model.
 ```{r augment}
 
 anova.full <- augment(anova.result)
 
-anova.full
+head(anova.full)
 ```
 
 Having the fitted and residuals in a dataframe will allow for making plots of the residuals, to see if the model you fit performs differently at different values of the predictive variables. 
@@ -277,7 +277,7 @@ glance(anova.result)
 
 ```
 
-The main advantage of these functions is practicality - you already could do all those things in **R**, this is just easier to type and understand, and the output is in a friendlier format. With these three tools, we could run many different models on the same dataset, apply them to subsets of the data and compare the residuals, strength and p-values of the models.
+The main advantage of these functions is practicality - you already could do all those things in **R**, this is just easier to type and understand, and the output is in a friendlier format. With these three tools, we could run many different models on the same dataset, apply them to subsets of the data and compare the residuals, strength, and p-values of the models.
 
 If this is something you are interested on using - we can explore how to iterate these techinques across different subgroups of your datasets, and comparing outputs from different models. As a taster, we can divide our dataset into two: training and testing. We will choose 70% of the observations to train our model and 30% of them to test it
 
@@ -313,14 +313,14 @@ And we can apply that model to the test dataset
 
 anova.test <- augment (anova.tr, newdata = test.dataset)
 
-anova.test
+head(anova.test)
 ```
 
 So we can plot how the fitted and real values compare between the training and test dataset
 
 ```{r plotting fitted vs real}
 
-bind_rows(anova.training.points,anova.test)
+
 
 ggplot( data = anova.training.points,
         aes(x = value,

@@ -1,0 +1,66 @@
+date_collected,time,site_name,site_code,subsite_name,lon,lat,salinity,temp,depth_sample (m),depth_bottom_m,collector,field_label,lab_label,notes_field
+6/29/14,12:05:00,Pipers Creek,PCM,NA,-122.38292,47.71064,29,14,,,,20140629 Pretide,PCB-0629-1205,
+6/29/14,14:00:00,Pipers Creek,PCM,NA,-122.38292,47.71064,28,14,,,,20140629 Posttide,PCB-0629-1400,
+6/27/14,10:35:00,Pipers Creek,PCM,north,-122.4189088,47.74005288,NA,12,1,,JOD,149,PCT-N4000,near drift line and shipping lane
+6/27/14,10:40:00,Pipers Creek,PCM,north,-122.3984387,47.72850982,NA,12,1,,JOD,150,PCT-N2000,near ORCA buoy
+6/27/14,,Pipers Creek,PCM,north,-122.3882071,47.72273692,NA,NA,1,,JOD,151,PCT-N1000,
+6/27/14,,Pipers Creek,PCM,north,-122.3830921,47.71985014,NA,NA,1,,JOD,152,PCT-N500,
+6/27/14,,Pipers Creek,PCM,north,-122.3805348,47.71840666,NA,HOBO broke,1,,JOD,153,PCT-N250,
+6/27/14,,Pipers Creek,PCM,north,-122.3792563,47.71768489,NA,HOBO broke,1,,JOD,154,PCT-N125,
+6/27/14,,Pipers Creek,PCM,north,-122.3787448,47.71739619,NA,HOBO broke,1,,JOD,155,PCT-N75,
+6/27/14,,Pipers Creek,PCM,north,-122.3779777,47.71696312,NA,HOBO broke,1,,JOD,157,PCT-N0,
+6/27/14,1030,Pipers Creek,PCM,central,-122.4248772,47.73409514,NA,13,1,,JOD,158,PCT-C4000,near drift line and shipping lane
+6/27/14,1047,Pipers Creek,PCM,central,-122.4044095,47.72255208,NA,13.5,1,,JOD,159,PCT-C2000,near ORCA buoy
+6/27/14,,Pipers Creek,PCM,central,-122.394179,47.71677918,NA,13.5,1,,JOD,160,PCT-C1000,
+6/27/14,,Pipers Creek,PCM,central,-122.3890646,47.71389239,NA,13.5,1,,JOD,161,PCT-C500,
+6/27/14,,Pipers Creek,PCM,central,-122.3865076,47.71244891,NA,13.5,1,,JOD,162,PCT-C250,
+6/27/14,,Pipers Creek,PCM,central,-122.3852292,47.71172715,NA,13,1,,JOD,163,PCT-C125,
+6/27/14,,Pipers Creek,PCM,central,-122.3847178,47.71143844,NA,13,1,,JOD,164,PCT-C75,
+6/27/14,,Pipers Creek,PCM,central,-122.3839508,47.71100538,NA,14,1,,JOD,166,PCT-C0,
+6/27/14,1025,Pipers Creek,PCM,south,-122.4302119,47.72787131,NA,13,1,,JOD,167,PCT-S4000,near drift line and shipping lane
+6/27/14,1052,Pipers Creek,PCM,south,-122.4097466,47.71632824,NA,13,1,,JOD,168,PCT-S2000,near ORCA buoy
+6/27/14,,Pipers Creek,PCM,south,-122.3995173,47.71055535,NA,14,1,,JOD,169,PCT-S1000,
+6/27/14,,Pipers Creek,PCM,south,-122.3944036,47.70766856,NA,13.7,1,,JOD,170,PCT-S500,
+6/27/14,,Pipers Creek,PCM,south,-122.3918469,47.70622508,NA,13,1,,JOD,171,PCT-S250,
+6/27/14,,Pipers Creek,PCM,south,-122.3905686,47.70550332,NA,13,1,,JOD,172,PCT-S125,
+6/27/14,,Pipers Creek,PCM,south,-122.3900573,47.70521461,NA,13,1,,JOD,173,PCT-S75,
+6/27/14,,Pipers Creek,PCM,south,-122.3892904,47.70478154,NA,"""13""",1,,JOD,175,PCT-S0,
+6/27/14,940,Pipers Creek,PCM,south,,,,12,,,ACS/AOS,"bottle ""2"" -Zm1",PCM-Z1,"""pre tow"""
+6/27/14,945,Pipers Creek,PCM,south,,,,12,,,ACS/AOS,3,PCM-S1,"""pre tow"""
+6/27/14,1115,Pipers Creek,PCM,center,,,,14,,,ACS/AOS,"""center sand 4Zm""",PCM-S2,"""post tow"""
+6/27/14,1112,Pipers Creek,PCM,center,,,,13.5,,,ACS/AOS,"""5 sand""",PCM-Z2,"""post tow"""
+6/27/14,1105,Pipers Creek,PCM,north,,,,13,,,ACS/AOS,"""6Zm""",PCM-Z3,"""pre tow"""
+6/27/14,1110,Pipers Creek,PCM,north,,,,13,,,ACS/AOS,"""7 sand""",PCM-S3,"""pre tow"""
+6/27/14,9:35:00,Pipers Creek,PCM,NA,-122.38292,47.71064,,13,,,RPK,1,PCB-0627-0935,
+6/27/14,11:20:00,Pipers Creek,PCM,NA,-122.38292,47.71064,,13,,,RPK,buoy 1120,PCB-0627-1120,
+6/27/14,12:15:00,Pipers Creek,PCM,NA,-122.38292,47.71064,,13,,,RPK,buoy 1215,PCB-0627-1215,
+6/27/14,13:00:00,Pipers Creek,PCM,NA,-122.38292,47.71064,,13,,,JOD,buoy1pm,PCB-0627-1300,
+6/26/14,9:30:00,Pipers Creek,PCM,NA,-122.38292,47.71064,NA,12,1,est 1.5,JOD/RPK,1,PCB-0626-0930,Pipers Creek Buoy
+6/26/14,10:30:00,Pipers Creek,PCM,NA,-122.38292,47.71064,28,12.5,est. 0.5-0.75,est. 0.5-0.75,JOD/RPK,2,PCB-0626-1030,Pipers Creek Buoy
+6/26/14,11:30:00,Pipers Creek,PCM,NA,-122.38292,47.71064,30,13,est. 0.5-0.75,est. 0.5-0.75,JOD/RPK,3,PCB-0626-1130,
+6/26/14,12:30:00,Pipers Creek,PCM,NA,-122.38292,47.71064,32,12,1,1,JOD/RPK,4,PCB-0626-1230,
+6/26/14,13:30:00,Pipers Creek,PCM,NA,-122.38292,47.71064,31,12,1,1.5,JOD/RPK,5,PCB-0626-1330,can't go deeper- up to waders
+7/1/16,9:00,Golden Gardens,GG,north,,,30.06,11.85,1,1.5,JOD/RPK,1,,
+7/1/16,10:00,Golden Gardens,GG,north,,,30.6,11.49,1,1.5,JOD/RPK,2,,
+7/1/16,11:00,Golden Gardens,GG,north,,,31.52,12.76,1,1.5,JOD/RPK,3,,
+7/1/16,0:00,Golden Gardens,GG,north,,,32.78,11.85,1,1.5,JOD/RPK,4,,
+7/1/16,9:00,Golden Gardens,GG,central,,,30.42,14.23,1,1.5,JOD/RPK,5,,
+7/1/16,10:00,Golden Gardens,GG,central,,,30.51,13.1,1,1.5,JOD/RPK,6,,
+7/1/16,11:00,Golden Gardens,GG,central,,,31.82,12,1,1.5,JOD/RPK,7,,
+7/1/16,0:00,Golden Gardens,GG,central,,,32.45,11.5,1,1.5,JOD/RPK,8,,
+7/8/16,9:00,Golden Gardens,GG,north,,,32.53,11.91,1,1.5,JOD/RPK,1,,
+7/8/16,10:00,Golden Gardens,GG,north,,,32.36,13.51,1,1.5,JOD/RPK,2,,
+7/8/16,11:00,Golden Gardens,GG,north,,,30.06,14.73,1,1.5,JOD/RPK,3,,
+7/8/16,0:00,Golden Gardens,GG,north,,,32.09,13.86,1,1.5,JOD/RPK,4,,
+7/8/16,9:00,Golden Gardens,GG,central,,,32.45,11.1,1,1.5,JOD/RPK,5,,
+7/8/16,10:00,Golden Gardens,GG,central,,,31.71,13.58,1,1.5,JOD/RPK,6,,
+7/8/16,11:00,Golden Gardens,GG,central,,,31.44,13.32,1,1.5,JOD/RPK,7,,
+7/8/16,0:00,Golden Gardens,GG,central,,,30.48,13.53,1,1.5,JOD/RPK,8,,
+7/10/16,9:00,Golden Gardens,GG,north,,,30.27,11.4,1,1.5,JOD/RPK,1,,
+7/10/16,10:00,Golden Gardens,GG,north,,,30.49,13.56,1,1.5,JOD/RPK,2,,
+7/10/16,11:00,Golden Gardens,GG,north,,,30.08,13.3,1,1.5,JOD/RPK,3,,
+7/10/16,0:00,Golden Gardens,GG,north,,,32.13,10.21,1,1.5,JOD/RPK,4,,
+7/10/16,9:00,Golden Gardens,GG,central,,,32.28,10.31,1,1.5,JOD/RPK,5,,
+7/10/16,10:00,Golden Gardens,GG,central,,,32.57,11.4,1,1.5,JOD/RPK,6,,
+7/10/16,11:00,Golden Gardens,GG,central,,,31.31,11.51,1,1.5,JOD/RPK,7,,
+7/10/16,0:00,Golden Gardens,GG,central,,,31.25,14.78,1,1.5,JOD/RPK,8,,

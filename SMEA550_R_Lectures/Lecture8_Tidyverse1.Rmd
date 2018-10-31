@@ -1,0 +1,119 @@
+---
+title: "Lecture8_Tidyverse"
+author: "Kelly and Gallego"
+date: ''
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r, include = F}
+library(knitr)
+options(width=60)
+require(knitr)
+# Set so that long lines in R will be wrapped:
+opts_chunk$set(tidy.opts=list(width.cutoff=80),tidy=TRUE)
+library(tidyverse)
+```
+
+Remember that swirling ocean of code that people create and contribute to an open-source software package like **R**?  Yeah... sometimes it can get pretty chaotic. In fact -- as in the development of spoken languages -- there can be competing styles, regional inconsistencies, and so on.  And occasionally, you get a new dialect that buds off into what could become its own language. Today we're talking about the "tidyverse", which is sort of a dialect within the universe of **R**, and it's increasingly common, so you should know about it.
+
+###History
+
+There is this guy, [Hadley Wickham](http://hadley.nz/). 
+
+![](./images/320px-Hadley-wickham2016-02-04.jpg)
+
+
+He is the central deity of the universe that includes **RStudio** (where he works as Chief Scientist), and the collection of **R** packages that he has developed ("tidyr", "dplyr", etc), which are collectively known as the "Tidyverse".  You can now get all of these packages together:  `install.packages("tidyverse")`.  There are loads of his talks on [YouTube](https://www.google.com/search?q=youtube+hadley+wickham), in case you want to watch talks about **R** in your free time. 
+
+He seems to have done some of this work during the course of his PhD at Iowa State University; the fact that a grad student has had such an enormous impact on the world of statistical computing is pretty darn cool.  The New York Times and many other media outlets use ggplot2 for graphics, for example; Hadley is one of its creators and also wrote the book on ggplot2.
+
+
+#The Idea
+
+In New Zealandish, "tidy" means "neat" or "orderly".  And so, a tidy dataset is one that is neat, orderly, and ready to be analyzed and visualized. [You might be familiar with Hadley's peer-reviewed [paper](http://vita.had.co.nz/papers/tidy-data.html) in the *Journal of Statistical Software* on tidy data.  But then again, you may not be familiar with it. ]
+
+Let's work through the "tidyr" vignette on tidy data.
+
+```{r, include=F}
+vignette("tidy-data")
+
+#another way to call vignettes is as follows:
+
+#browseVignettes("tidyr")  #to see the available vignettes; you can do this for any package
+
+#click on 'HTML'
+
+```
+
+(The vignette gives great examples and works through tidying messy data... look at it in detail)
+
+The take-home here is that:
+
+* What matters in a dataset is the collection of **values**
+* Every value belongs to a **variable** (which we put in columns, one to a column, such that essentially a variable == a column) and an **observation** (which we put in rows)
+* The key is to define your variables carefully and efficiently. You should never have results in your column headers; only the names of the variables being recorded with each observation. (See "Column headers are values, not variable names", in the vignette).
+
+A side-effect of this view of the universe is, because all of the information we need is contained within the values themselves and the names of the variables for which those values are data, *we don't need row names*. 
+
+
+#Inputting Information and Piping 
+
+Remember calculators?  They were the first kinds of computers that non-super-nerds used all the time, and could carry around easily. Different kinds of calculators exposed really interesting questions about how people should interact with machines. In particular, should a user enter information in the way that the user thinks about it (== the way that a mathematical operation is written on paper, for example), or in the way that the computer thinks about it (which is often more efficient)?<sup><a href="#fn1" id="ref1">1</a></sup>
+
+<sup id="fn1">1. [The way you write math on paper -- for example, `1 + 1` is called "infix notation", because the *operator* (= function, in this case "add") is in the middle of the two values it is supposed to work on (in case you're interested, these are the *operands*.)  And when you think about it, this is a weird way to express anything; the most important bit is an infix between two variables.  It's the equivalent of "noun verb noun" ... which is how English works ("Mary greets Jane"), but not really how machines probably work. An alternative, "postfix notation" was the way the world's first scientific calculator, the HP-35 (https://en.wikipedia.org/wiki/HP-35) worked. It required the user to first enter the values on which the machine would work, and *then* the function (= operator).  So, instead of `1 + 1`, the user would enter `1, 1, +`  (This is also called "Reverse Polish Notation", and is more efficient in general, reducing the number of keystrokes necessary for calculation).  Apparently, engineers loved this.] <a href="#ref1" title="Jump back to footnote 1 in the text.">↩</a></sup>
+
+In any case... the same kinds of questions about how to most logically put information into a computer are evident in **R**.  
+
+Regular, base **R** does things with the function *first*, and then the operand. (I suppose this is "prefix notation").  `sum( c(1,1) )`.  And in the case of simple mathematical operators, they include an infix option `1 + 1`.  Which is fine.
+
+But... often we want to do a string of operations all in a row. For example, we want to take the number of prisoners booked in Seattle jails and then group them by courthouse and then take a mean and a variance of the amount of time they were in jail.  If we do all of these operations separately, we have to store all of the intermediate products along the way, and we don't really care about these products.  
+
+Computers solve this problem by "piping"... doing one operation, and passing the result onto the next operation, and so on. Base **R** doesn't have piping, so Hadley and others created a way to do it. The result is a kind of postfix notation: you pass a value to a function, and then get a result. 
+
+The pipe is represented as `%>%`, and it works like this:  `value %>% function()` , or `noun %>% verb` .  By contrast, as you know, base **R** works like this: `function(value)`. 
+
+
+```{r}
+#Base R
+sum( c(1,1) )
+
+#tidyR
+c(1,1) %>% sum()
+
+```
+
+
+This looks ugly with just one operation to do. But it shines when you've got a series of them. 
+
+```{r}
+c(1:10)  %>%         #take a vector of numbers and send it down the line...
+  sqrt() %>%         #take the square root of each number in the vector, and send it...
+  keep(.< 3)  %>%   #keep only the values that are under 3, and send it...
+  sum()              #sum the resulting numbers
+
+
+#the equivalent in baseR is:
+
+a <- sqrt(c(1:10))
+b <- a[a<3]
+sum(b)
+
+#for which we had to store two intermediate sets of values we didn't actually care about. 
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
