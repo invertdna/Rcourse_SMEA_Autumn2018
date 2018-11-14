@@ -12,7 +12,7 @@ library(knitr)
 options(width=60)
 require(knitr)
 # Set so that long lines in R will be wrapped:
-opts_chunk$set(tidy.opts=list(width.cutoff=80),tidy=TRUE)
+opts_chunk$set(tidy.opts=list(width.cutoff=80),tidy=TRUE, message = F, warning = F)
 library(tidyverse)
 ```
 
@@ -32,7 +32,7 @@ He seems to have done some of this work during the course of his PhD at Iowa Sta
 
 #The Idea
 
-In New Zealandish, "tidy" means "neat" or "orderly".  And so, a tidy dataset is one that is neat, orderly, and ready to be analyzed and visualized. [You might be familiar with Hadley's peer-reviewed [paper](http://vita.had.co.nz/papers/tidy-data.html) in the *Journal of Statistical Software* on tidy data.  But then again, you may not be familiar with it. ]
+In New Zealandish, "tidy" means "neat" or "orderly".  And so, a tidy dataset is one that is neat, orderly, and ready to be analyzed and visualized. [You might be familiar with Hadley's peer-reviewed [paper](http://vita.had.co.nz/papers/tidy-data.html) in the *Journal of Statistical Software* on tidy data.  But then again, you may not be familiar with it.]
 
 Let's work through the "tidyr" vignette on tidy data.
 
@@ -66,9 +66,9 @@ Remember calculators?  They were the first kinds of computers that non-super-ner
 
 In any case... the same kinds of questions about how to most logically put information into a computer are evident in **R**.  
 
-Regular, base **R** does things with the function *first*, and then the operand. (I suppose this is "prefix notation").  `sum( c(1,1) )`.  And in the case of simple mathematical operators, they include an infix option `1 + 1`.  Which is fine.
+Regular, base **R** does things with the function *first*, and then the operand. (I suppose this is "prefix notation").  `sum( c(1,1) )`.  And in the case of simple mathematical operators, they include a special option to use infix option `1 + 1`.  Which is fine.
 
-But... often we want to do a string of operations all in a row. For example, we want to take the number of prisoners booked in Seattle jails and then group them by courthouse and then take a mean and a variance of the amount of time they were in jail.  If we do all of these operations separately, we have to store all of the intermediate products along the way, and we don't really care about these products.  
+But... often we want to do a string of operations all in a row. For example, we want to take the number of prisoners booked in Seattle jails and then group them by courthouse and then take a mean and a variance of the amount of time they were in jail.  Or do the same thing, but with flight times from New York. If we do all of these operations separately, we have to store all of the intermediate products along the way, and we don't really care about these products.  They take up space, clutter the desktop, and make it hard to follow your own code later (or to follow anyone else's code).
 
 Computers solve this problem by "piping"... doing one operation, and passing the result onto the next operation, and so on. Base **R** doesn't have piping, so Hadley and others created a way to do it. The result is a kind of postfix notation: you pass a value to a function, and then get a result. 
 
@@ -88,22 +88,177 @@ c(1,1) %>% sum()
 This looks ugly with just one operation to do. But it shines when you've got a series of them. 
 
 ```{r}
+
 c(1:10)  %>%         #take a vector of numbers and send it down the line...
   sqrt() %>%         #take the square root of each number in the vector, and send it...
-  keep(.< 3)  %>%   #keep only the values that are under 3, and send it...
-  sum()              #sum the resulting numbers
-
+  keep(.< 3)  %>%    #keep only the values that are under 3, and send it...
+  sum()              #sum the resulting numbers)
 
 #the equivalent in baseR is:
 
-a <- sqrt(c(1:10))
-b <- a[a<3]
-sum(b)
+a <- c(1:10)
+b <- sqrt(a)
+d <- b[b<3]
+sum(d)
 
-#for which we had to store two intermediate sets of values we didn't actually care about. 
+#for which we had to store three intermediate sets of values we didn't actually care about. And which probably took longer. 
 
 ```
 
+So, let's compare different ways of doing things, and practice piping. We'll perform a set of operations the base-**R** way, and then do it the tidyverse way. 
+
+Let's say we want to calculate the top 10 names of the 20th century for babies born in the US, and then plot the frequency of those names over time.  And (this is a gender-binary dataset) perhaps we'll do it for babies identified as male and female, respectively. 
+
+```{r}
+baby <- read.csv("../Data/NationalNames.csv")  #national baby names; 1.8 million records between 1880 and 2014
+```
+
+
+# Base **R**
+```{r}
+#Base R
+
+starttime <- Sys.time()  #record time the calculation started, for comparison
+
+baby20th <- baby[baby$Year >= 1900 & baby$Year <= 1999,]  #trim dataset to just 20th century
+
+babyTotal <- aggregate(baby20th$Count, by = list(baby20th$Name, baby20th$Gender), FUN = sum)  #aggregate all instances of each name by summing across all years in the dataset
+  names(babyTotal) <- c("Name", "Gender", "TotalCount")  #rename, for legibility
+  
+babyTotal <- babyTotal[order(babyTotal$TotalCount, decreasing = T),]  #sort on decreasing total counts  
+
+#grab the top 10 most-common names for M- and F-assigned babies
+top10male <- as.character(
+  babyTotal$Name[babyTotal$Gender == "M"][1:10]
+  )
+top10female <- as.character(
+  babyTotal$Name[babyTotal$Gender == "F"][1:10]
+)
+
+#now go back to the original dataset, and plot these names through time
+
+library(viridis)
+colorScheme <- viridis(10, alpha = 0.5)
+
+par(mfrow = c(2,1))  #create canvas with two plots
+par(mar = c(2,2,1,1))  #change margins
+
+#plot top-10 males
+    plot(Count~Year, 
+         data = baby20th[baby20th$Name == top10male[1] & baby20th$Gender == "M",],
+         type = "l", lwd = 2,
+         col = colorScheme[1], main = "Male")  #set up the plot with the most common name
+    for (i in 2:10){  #run a loop to add the others
+      points(Count~Year, 
+         data = baby20th[baby20th$Name == top10male[i] & baby20th$Gender == "M",],
+         type = "l", lwd = 2,
+         col = colorScheme[i])
+    }  
+      legend("topleft", legend = top10male, fill = colorScheme, ncol = 2, cex = 0.8)  #add a legend
+
+#plot top-10 females
+    plot(Count~Year, 
+         data = baby20th[baby20th$Name == top10female[1] & baby20th$Gender == "F",],
+         type = "l", lwd = 2, ylim = c(0,100000),
+         col = colorScheme[1], main = "Female")  #set up the plot with the most common name
+    for (i in 2:10){  #run a loop to add the others
+      points(Count~Year, 
+         data = baby20th[baby20th$Name == top10female[i] & baby20th$Gender == "F",],
+         type = "l", lwd = 2,
+         col = colorScheme[i])
+    }  
+      legend("topleft", legend = top10female, fill = colorScheme, ncol = 2, cex = 0.8)  #add a legend
+
+endtime <- Sys.time()        
+
+#elapsed time in seconds
+endtime - starttime
+
+```
+
+# Tidyverse
+
+```{r}
+starttime <- Sys.time()  #record time the calculation started, for comparison
+
+baby %>%   #take the baby df, and ...
+  filter(Year >= 1900 & Year <= 1999) %>%   #filter for the appropriate years
+  group_by(Name, Gender) %>% #group by name and gender
+  summarize(TotalCount = sum(Count)) %>%  #aggregate by name and gender by summing Counts to create a new variable, TotalCount
+  arrange(desc(TotalCount)) %>%  #arrange the resulting table by TotalCount in descending order
+  group_by(Gender) %>%  #group by gender, and...
+  top_n(10) -> #take the top 10 of each gender.... and create a new object w the result, called top10s
+  top10s
+
+#now plot these over time
+colorScheme <- viridis(20, alpha = 0.5)
+
+baby %>% 
+  filter(Year >= 1900 & Year <= 1999) %>%   #filter for the appropriate years
+  filter(Name%in%top10s$Name) %>%   #filter for top10 names in each gender 
+  filter(Count > 1000) %>%  #clear out underbrush to focus on trends, and pipe to ggplot
+    ggplot(aes(x = Year, y = Count, color = Name)) +
+      geom_line(size = 1.2) +
+      facet_grid(Gender~.) +
+      scale_color_manual(values=colorScheme) +
+      guides(color=guide_legend(ncol=2)) +
+      theme_bw()
+
+
+
+
+endtime <- Sys.time()        
+
+#elapsed time in seconds
+endtime - starttime
+
+```
+
+So, let's note some things here:
+
+- The tidyverse is considerably faster and involves considerably less code
+- Piping makes things easier to follow, and can flow right into graphing with ggplot
+- The pipe ` %>% ` isn't the only difference w the tidyverse; there are many functions that are specific to the tidyverse, and these often have underscores (e.g., `group_by`), although not necessarily (`filter`, `arrange`, etc).
+- The tidyverse often lets you skip quotation marks around the names of columns/variables
+- Piping your functions often makes you re-think how to organize things; we don't just use the regular base-**R** functions in the middle of a series of pipes (although this is often possible)
+- By default, the pipe sends data into the next command as the FIRST argument of that command; sometimes, however, you may need to use the character `.` in a piping command to specify otherwise. For example `facet_grid(Gender~.)` says that you are going to use the piped data in place of the `.` rather than as the first argument.
+- `group_by` and `summarize` are extremely useful ways of subsetting data and applying functions to the different subsets... without a `for` loop. We will focus on these more in the coming weeks, but for now, know that `group_by` tells **R** which variables you are going to want to use as categories (on which to perform some operation), and then `summarize` performs some operation on the data, but does it for each group separately. [see https://dplyr.tidyverse.org/ for more.]
+
+For example:
+```{r}
+library(yarrr)
+
+pirates %>% #pirates dataset from yarrr package
+  group_by(sword.type) %>%  #group data by sword type, and then ... 
+  summarize(mean(grogg))    #take the mean of column `grogg` for pirates having each sword type
+
+
+#this is equivalent to:
+
+for (i in unique(pirates$sword.type)){
+  print(
+    mean(
+      pirates$grogg[pirates$sword.type==i]
+    )
+  )
+}
+
+#and also equivalent to:
+
+sapply(unique(pirates$sword.type), 
+       function(x) {mean(
+                        pirates$grogg[pirates$sword.type==x])
+         }
+       )
+
+```
+
+
+
+
+# Finally
+
+Recall that tidy data often uses long tables (with few columns or "variables", but many rows or "cases/observations"). You may want/need to reshape your datasets to make good use of some tidyverse/ggplot commands.  This means you will often use `gather` and `spread`.  We will cover these in the coming weeks, along with the base-**R** commands `aggregate` and `split`. 
 
 
 

@@ -7,7 +7,8 @@ output:
   pdf_document: default
 ---
 
-```{r}
+```{r, include=FALSE}
+library(tidyverse)
 library(knitr)
 options(width=60)
 require(knitr)
@@ -15,11 +16,11 @@ require(knitr)
 opts_chunk$set(tidy.opts=list(width.cutoff=80),tidy=TRUE)
 ```
 
-Ah, the swirling ocean of code that shows up in the wake of a popular, free, and open-source project like **R**.  So many people write so many packages for so many things.  There are packages for [analyzing baseball data, for example](https://github.com/BillPetti/baseballr), or [tennis data, for that matter](https://github.com/skoval/deuce).  [Calculating carbonate chemistry](https://cran.r-project.org/web/packages/seacarb/index.html), [waveform analysis](https://cran.r-project.org/web/packages/seewave/index.html), [organizing musical chord charts](https://www.analyticsvidhya.com/blog/2018/08/chorrrds-r-package-analyzing-working-music-data/), [exploring census data](https://cran.r-project.org/web/packages/census/index.html), and surely a thousand other things. 
+Ah, the swirling ocean of code that shows up in the wake of a popular, free, and open-source project like **R**.  So many people write so many packages for so many things.  There are packages for [analyzing baseball data, for example](https://github.com/BillPetti/baseballr), or [tennis data, for that matter](https://github.com/skoval/deuce).  [Calculating carbonate chemistry](https://cran.r-project.org/web/packages/seacarb/index.html), [waveform analysis](https://cran.r-project.org/web/packages/seewave/index.html), [organizing musical chord charts](https://www.analyticsvidhya.com/blog/2018/08/chorrrds-r-package-analyzing-working-music-data/), [exploring census data](https://cran.r-project.org/web/packages/census/index.html), and surely a thousand other things.
 
 But making beautiful plots is something that **R** does well, and Hadley Wickham's package **ggplot2** is probably the best out there for doing it. You're already aware that this package exists, but today we're going to take it for a spin.
 
-There's a whole theory of graphics underlying **ggplot2**, and you can learn a lot more about it [here](https://ggplot2.tidyverse.org/). But let's start with the helpfile for the package. 
+There's a whole theory of graphics underlying **ggplot2**, and you can learn a lot more about it [here](https://ggplot2.tidyverse.org/). But let's start with the helpfile for the package.
 
 ```{r}
 library(ggplot2)
@@ -27,20 +28,31 @@ library(ggplot2)
 ?ggplot
 ```
 
-The most confusing thing about **ggplot2** is that it doesn't use exactly the same syntax as the rest of **R**, for reasons that we won't go into (and that I don't really understand).
 
-Essentially, though, you use it to first create a canvas `ggplot()`, and then you add elements to that canvas, piecemeal.  You use the `+` symbol to tell the package that you are adding another element to the plot. 
+[Note: Responding to the feedback we got in the mid-quarter evaluation, we will be using a single data set in this class. It's built-in, and is called `mpg`...]
 
 ```{r}
-ggplot()  #just gives you the canvas
+head(mpg)
+```
+
+
+
+The most confusing thing about **ggplot2** is that it doesn't use exactly the same syntax as the rest of **R**, for reasons that we won't go into (and that I don't really understand).
+
+Essentially, though, you use it to first create a canvas `ggplot()`, and then you add elements to that canvas, piecemeal.  You use the `+` symbol to tell the package that you are adding another element to the plot.
+
+
+
+```{r}
+ggplot(mpg)  #just gives you the canvas
 ```
 
 ```{r}
 ggplot(data = mpg,   #here, we're using a built-in dataset featuring info on different cars
-  aes(x = displ, y = hwy , color = class) #the "aes" argument adds aesthetic properties to your plot. 
-  #You always need this to tell ggplot what you'd like to be plotting. 
+  aes(x = displ, y = hwy , color = class) #the "aes" argument adds aesthetic properties to your plot.
+  #You always need this to tell ggplot what you'd like to be plotting.
   )
-  
+
 ```
 
 OK -- so now we've told the package what we would like to plot (that is, what dataframe the data are coming from (mpg), the *x* and *y* variables, and that we want to vary the plot by color according to the class of the car being described.)  But why is nothing plotted?  
@@ -49,9 +61,8 @@ Because **ggplot2** is very needy.  You actually need to tell it you want to plo
 
 ```{r}
 ggplot(data = mpg,   
-  aes(x = displ, y = hwy , color = class) 
-  ) +  #same code as above, but now with...
-  geom_point()  #to tell ggplot that you want to plot points
+  aes(x = displ, y = hwy , color = class)) +  #same code as above, but now with...
+  geom_point(aes(shape = manufacturer))  #to tell ggplot that you want to plot points
 ```
 
 Now, isn't that nice?  And in fact, we can make lots of different plots using similar code.  
@@ -59,7 +70,7 @@ Now, isn't that nice?  And in fact, we can make lots of different plots using si
 ```{r, message=FALSE, warning=FALSE, error=FALSE}
 
 baseinfo <- ggplot(data = mpg,   
-  aes(x = displ, y = hwy , color = class) 
+  aes(x = displ, y = hwy , color = class)
   )  #I'll save all of this as an object called "baseinfo", for ease of typing...
 
 baseinfo + geom_smooth()  #for example, to plot smoothed lines and some semblance of confidence intervals showing the trends of each of the classes of cars
@@ -73,17 +84,17 @@ We add things like titles and text and axis labels to the plot in the same way.
 baseinfo + geom_point() +
   ggtitle("Some Car Stuff") + labs(x = "Engine Displacement", y = "Highway Miles-per-Gallon") +
   annotate("text", x = 6, y = 40, label ="This is nice, no?", color = "white") +
-  theme_dark() + #one of several pre-set themes; 
+  theme_dark() + #one of several pre-set themes;
   #you can change everything about the plot, such as the background color, which I'm doing here
-  theme(plot.background = element_rect(fill = "lightgrey"), 
+  theme(plot.background = element_rect(fill = "lightgrey"),
         legend.background = element_rect(fill = "grey70"))
-  
+
 ```
 
 
-So you can see the appeal.  Once you get the hang of it, you can make all kinds of very nice plots.  
+So you can see the appeal.  Once you get the hang of it, you can make all kinds of very nice plots... and more than plots, these are really *analyses*.  For example, linear models of the subsets of different cars, as shown above.
 
-Some further examples: 
+Some further examples:
 
 ```{r}
 ggplot(mpg, aes(class, hwy, fill=class)) +
@@ -101,7 +112,7 @@ ggplot(mpg, aes(hwy, fill=class)) +
 ```
 
 
-##Facets
+## Facets
 
 And perhaps the most useful thing about **ggplot**... you can create subplots for different subsets  of your data.  Which is very often something you want to do.  Those subplots are, for some reason, called *facets*.
 
@@ -111,6 +122,23 @@ Note how convenient this is: you don't have to split your data into subsets, bec
 ggplot(mpg, aes(hwy)) +
   geom_histogram(binwidth = 5) +
   facet_wrap(~class)
+
+#or you can make the same plot some fun colors...
+
+library(wesanderson) #load library wesanderson
+ggplot(mpg, aes(hwy, fill = class)) +
+  geom_histogram(binwidth = 5) +
+  facet_wrap(~class) +
+  scale_fill_manual(values=wes_palette(n=7, name="Zissou1", type = "continuous"))
+
+#or
+library(viridis) #load library viridis
+ggplot(mpg, aes(hwy, fill = class)) +
+  geom_histogram(binwidth = 5) +
+  facet_wrap(~class) +
+  scale_fill_manual(values=viridis(n=7, alpha = .7))
+
+#see this link for more ideas and examples:  http://www.sthda.com/english/wiki/ggplot2-colors-how-to-change-colors-automatically-and-manually
 
 #and you can even facet_wrap by multiple variables:
 
@@ -127,6 +155,30 @@ ggplot(mpg, aes(displ, hwy)) +
   geom_point() +
   facet_grid ( cyl ~ class)
 
+```
+
+# In-class mini-task
+
+Working in groups at your table, create a colorful grid of scatter plots -- each with best-fit lines -- from the dataset `mpg`.  Tell us something about gas mileage and how it has changed between 1999 and 2008.  See `?mpg` for variables.  You could also add variables, such as continent/country of origin, and that might be interestin
+g.  For example:
+
+![](images/MPG_by_time_manuf.jpg)
+
+
+
+```{r minitask, include = F, echo = F}
+#example
+
+# jpeg("MPG_by_time_manuf.jpg", width = 800 , height = 400)
+# mpg %>%   #start w the whole mpg dataset
+#   select(manufacturer, year, cty, hwy) %>%  #select just the variables necessary and ...
+#   gather(key = "variable", value = "value", -manufacturer, -year) %>%  #make tidy
+#   ggplot(aes(x = year, y = value, color = variable)) +  #plot MPG by year for city and highway (distinguished by color)
+#     geom_smooth(method = "lm") + #create a linear model for each
+#     facet_grid(~manufacturer) +  #put these in a column-wise grid by manufacturer
+#     theme_minimal() + #strip out a bunch of elements to make simple plot
+#     theme(axis.text.x = element_text(angle = 90, hjust = 1))  #rotate x-axis labels, which I google every time I need it
+# dev.off()
 ```
 
 
