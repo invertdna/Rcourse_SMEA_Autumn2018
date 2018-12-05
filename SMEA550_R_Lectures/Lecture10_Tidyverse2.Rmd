@@ -1,0 +1,250 @@
+---
+title: "Lecture 10: Tidverse2"
+author: "Kelly and Gallego"
+date: ''
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r, include = F}
+library(knitr)
+options(width=60)
+require(knitr)
+# Set so that long lines in R will be wrapped:
+opts_chunk$set(tidy.opts=list(width.cutoff=80),tidy=TRUE, message = F, warning = F, error = T, echo = T)
+library(tidyverse)
+library(lubridate)
+library(yarrr)
+```
+
+# Reshaping Datasets: `gather` and `spread`
+
+Very often you have a dataset of one shape, and you want to somehow magically change it into a different shape. For example, you have this:
+
+```{r, echo = F}
+
+head(mtcars[,1:3])
+
+```
+
+... but you want this:
+
+```{r, echo = F}
+
+t(head(mtcars[,1:3]))
+
+```
+
+... or this:
+
+```{r, echo = F}
+
+head(mtcars[,1:3]) %>% 
+  rownames_to_column("Model") %>% 
+  gather(key = "Measurement", value = "Value", -Model)
+
+```
+
+**R** -- and particularly the tidyverse -- is pretty good at reshaping dataframes once you get the hang of it. 
+
+* The most basic transformation for a dataframe is `t()` (in base-**R**), which just transposes rows into columns and vice-versa.  That's what we did from the first to the second examples above. 
+
+* Wide vs. Long.  You've heard us talk about wide and long tables... in general, tidy data analysis likes long tables with very few columns (see the table directly above), and organizing data in this way makes it easy to do plotting in ggplot. BUT long tables don't really make sense for humans to read off the screen (compare the first and third tables above... which would you rather read?)
+
+It takes a while to get comfortable with these tidyverse commands, but they are super useful: `gather` makes a dataframe longer, and `spread` makes it wider. They are opposites of one another.
+
+So: 
+
+```{r}
+Cars <- head(mtcars[,1:3]) #make a small dataset to play with
+
+Cars
+
+#this has rownames, which we have to get rid of before we use `gather()`
+
+Cars %>% 
+  rownames_to_column("Model") %>%    #here, move rownames to a column and call that column `Model`
+  gather(#gather takes a few arguments, none of them intuitive:
+    key = "ThingMeasured",  #the `key` will be the column header containing the newly organized info
+    value = "Value",   #value is the measured value of the variable in the new column `ThingMeasured`
+    -Model #and here, we're telling **R** NOT to gather the new column `Model` into `ThingMeasured`; we want it to be treated differently
+  ) -> TidyCars  #create a new object called `TidyCars`
+
+TidyCars
+
+#then, to reverse this process, use `spread`:
+
+spread(TidyCars, key = "ThingMeasured", value = "Value")
+
+
+```
+
+Note that long tables are useful for ggplot, as mentioned. This is because the different values in the "key" column (here, called `ThingsMeasured`) lend themselves to facet wrapping (and, outside of ggplot, also to `group_by` and subsequent analyses).
+
+```{r}
+ggplot(TidyCars, aes(x = Model, y = Value)) +
+  geom_point() +
+  facet_wrap(~ThingMeasured, scales = "free") +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) #rotate x-axis labels
+```
+
+
+# Merging and Joining
+
+Another common requirement is merging two datasets together... for example, admissions data for grad school (where data from each year are on a separate spreadsheet), etc. 
+
+In one sense this can be a trivial task: where you are joining two dataframes with the exact same rows/columns, so you can just paste them together:
+
+```{r}
+
+# in base-R
+rbind(
+  Cars[1:3,],
+  Cars[4:6,]
+)
+
+#in tidyverse:
+
+bind_rows(
+  Cars[1:3,],
+  Cars[4:6,]
+)  #note here if you want the model names, you'd have to preserve rownames with a function like `rownames_to_column()`
+```
+
+But life is more complicated than that.  Normally you have something like this: 
+
+```{r, echo = F}
+Cars <-
+  Cars %>% 
+  rownames_to_column("Model")
+  
+Cars1 <- Cars[1:2, 1:3]
+Cars2 <- Cars[3:6, c(1,3:4)]
+```
+
+```{r, echo = T}
+Cars1
+Cars2
+
+rbind(Cars1, Cars2)  #trying to do an rbind doesn't work because the column names are different... this is a safety check that makes sense. 
+
+cbind(Cars1, Cars2)  #this weirdly does not give an error, but the output makes little sense... note that there are repeated entries 
+```
+
+So what to do?
+
+```{r}
+merge(Cars1, Cars2, all = T)  #base-R uses the `merge` function
+
+full_join(Cars1, Cars2)  #tidyverse has a similar function `full_join`, and also `left_join`, `right_join`, `inner_join`, etc
+
+```
+
+Super useful. Note that it uses column names to decide what to merge.  So the names have to be the same between datasets for this to work.  
+
+If you want to merge by rownames, create a new column from those names, and then use that column to merge the datasets.
+
+## Joins with *key* columns: relational tables
+
+Sometimes the two datasets you want to share don't have the same columns: the information in both datasets is complementary. Let's go back to the library `nycflights13`. It has a number of datasets: 
+
+  * flights
+  
+```{r flights}
+
+library (nycflights13)
+
+flights
+
+```
+
+  * airports
+
+```{r airports}
+
+airports
+
+```
+
+The information from both datasets is complementary, the only thing we need to combine both datasets is a common column that tells us which information from table2 can be joined with which row from table 1.
+
+```{r}
+
+joined.dataset <- left_join(flights, airports, 
+                            by = c("origin" = "faa"))
+
+
+
+```
+  
+  
+# `match` and `%in%`
+
+While we're at it, these are some other super useful things, although they aren't in the tidyverse.  
+
+Suppose we have two vectors: 
+
+```{r, echo = T}
+
+v1 <- c(letters[1:10])
+
+v2 <- c(letters[8:15])
+
+```
+
+
+
+
+Base-**R** has great ways of:
+
+  * finding out what elements of one vector are in another (`%in%`, which is a shorthand for another function, `is.element`), and 
+
+  * reordering the elements of one vector to match those in another (`match`).
+
+```{r, echo = T}
+match(v1, v2)  #NA means there is no match of v1 in v2.  A number is the index of the matching value... here, the 8th element of v1 is the 1st element of v2, for example.
+
+#note this is asymmetrical:
+match(v2, v1)
+
+v1%in%v2  #gives a logical vector: is each element of v1 included in v2?  
+
+#this is the same as 
+is.element(v1, v2)
+
+```
+
+
+This is useful for, say, ordering rows of one dataset to match those in another dataset. 
+
+
+OK... digression over. Lastly:
+
+# Filtering vs. Subsetting
+
+In base-**R**, subsetting can be a bit awkward.  Let's say -- in the `pirates` dataset -- you want to see only the pirates that are older than 40.  
+
+```{r}
+library(yarrr)
+
+pirates[pirates$age > 40,]  #one option; select all rows for which pirates$age > 40
+
+subset(pirates, pirates$age > 40)  #another option, same result
+
+#the tidyverse version of this is `filter`.  I find this confusing because you are filtering and KEEPING rows that meet a set of criteria, rather than ELIMINATING them.  But whatever. 
+
+pirates %>% 
+  filter(age > 40)   #this does the same thing as subsetting, but a bit more elegantly.  And very useful for piping the result on to something else!
+
+
+
+```
+
+
+
+
+
+
+
+

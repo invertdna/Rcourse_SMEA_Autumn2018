@@ -1,0 +1,204 @@
+---
+title: "Lecture 9: Aggregation"
+author: "Kelly and Gallego"
+date: ''
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r, include = F}
+library(knitr)
+options(width=60)
+require(knitr)
+# Set so that long lines in R will be wrapped:
+opts_chunk$set(tidy.opts=list(width.cutoff=80),tidy=TRUE, message = F, warning = F)
+library(tidyverse)
+library(lubridate)
+```
+
+Suprisingly often, we want to split a dataset into chunks and then ask about some property of each chunk.  For example, how many flights landed at an airport on Tuesdays vs. Wednesdays?  How do people in Arkansas think about climate change vs. people in Oregon?  What's the average age of people in Nigeria vs. Sudan?  Etc.  
+
+In Excel, you would maybe do this by creating sub-spreadsheets for each site/location/etc you were interested in, and work on each separately.  Or you would select some cells for some calculations, and put the results in a different column.  Or you would write an `ifelse` command (but do you ever really do this in Excel?).  
+
+But in **R**, as we've already seen, there are easy and great ways of doing this. And really, this is what you've done several times with `for` loops. 
+
+But if we can avoid doing loops, that's often a good idea.  
+
+Today, we'll look at different aggregation techniques, in base **R** and tidyverse, both.  
+
+First, let's pick a dataset to look at.  I've chosen a list of worldwide UFO sightings (mainly from the 20th century) for today's lecture... more than 80,000 observations.  
+
+```{r}
+ufo <- read.csv("../Data/UFOscrubbed.csv", as.is=T)
+
+ufo$datetime <- as.Date(ufo$datetime, format = "%m/%d/%Y %H:%M") #capture the correct date format
+
+ufo$year <- format(ufo$datetime, format = "%Y")  #create a variable that just gives the year of the sighting
+```
+
+
+# Trends over time
+Have UFO sightings increased/decreased over time?
+
+* To answer this question, we want to aggregate sightings by year. 
+
+### In Base **R**
+
+Here we will use the `aggregate` function, which does what it sounds like it would do.  
+
+```{r}
+
+sightings.by.year <-                    #create a new object
+    aggregate(ufo$datetime,             #use the aggregate function on a dataset
+              by = list(ufo$year),      #give R one or more grouping variables in a list
+              FUN = length)             #tell R what function you want to apply to each of the groups
+
+#here, we are taking the sighting events (as reflected by date and time), grouping them by year, and just counting how many there were in each group (using the function `length`).
+
+head(sightings.by.year)
+
+```
+
+Note that by default, `aggregate` creates a column name for your grouping variables, and calls them "Group.1" , etc.  You may want to rename them (as is done below).  Now we can plot them.  
+
+```{r}
+names(sightings.by.year) <- c("Year", "Sightings")
+
+plot(sightings.by.year, pch = 19, type = "b")
+```
+
+Wow. That's quite a trend.  Note that it's not corrected for global population growth, but still... 
+
+OK -- one more use of `aggregate`.  Let's break this down as observations per country per year. 
+
+```{r}
+sightings.by.country.year <-
+      aggregate(ufo$datetime,             #use the aggregate function on a dataset
+                by = list(ufo$year, ufo$country),      #give R one or more grouping variables in a list
+                FUN = length)             #tell R what function you want to apply to each of the groups
+
+names(sightings.by.country.year)<- c("Year", "Country", "Sightings")  #rename
+sightings.by.country.year <- sightings.by.country.year[sightings.by.country.year$Country!="",] #filter to keep only those with a country listed
+
+par(mfrow=c(5,1))
+par(mar = c(2,2,1,1))
+  for (i in unique(sightings.by.country.year$Country)){
+    plot(Sightings~Year, 
+         data = sightings.by.country.year[sightings.by.country.year$Country == i,],
+         xlim = c(1910,2010),
+         pch = 19, type = "b",
+         main = i)
+  }
+
+
+
+```
+
+OK, cool.  And note the y-axis:  UFO sightings (or at least, reportings of them) are almost entirely an American phenomenon.
+
+
+The point here is that you can apply any function you want (here, we used `length`, but it could have been anything) to different slices of your dataset.  Very handy.
+
+### In the Tidyverse
+
+Same thing... first, let's plot observations by year.  In the Tidyverse, we will use `group_by` and `summarize` to do what we did with `aggregate` in base-**R**.  
+
+```{r}
+
+ufo %>%                        #take your dataset and pipe it
+  group_by(year) %>%           #tell R you want to group observations by the column `year`
+  summarize(Sightings = n())  ->  
+  tidy.sightings #summarize your data by that same grouping variable (here, year), create a new summary variable called `Sightings` and apply the function n()  (which counts observations) to each of your groups.   And create an object. Done.  
+  
+  
+  #Then we'll pipe this to ggplot for plotting
+  tidy.sightings %>% 
+  ggplot(aes(x = year, y = Sightings)) +
+    geom_point() +
+    theme(axis.text.x = element_text(angle = 90, hjust = 1))  #rotate x-axis labels for legibility
+  
+  
+
+```
+
+... and to split them out by country, we use most of the same code:
+
+```{r}
+ufo %>%                        #take your dataset and pipe it
+  filter(country!="") %>%  #filter out those with no country listed
+  group_by(year, country) %>% 
+  #tell R you want to group observations by the columns `year` and `country`
+  summarize(Sightings = n())  ->  
+  tidy.sightings.country #summarize your data by that same grouping variable (here, year), create a new 
+
+#now plot
+tidy.sightings.country %>% 
+  ggplot(aes(x = year, y = Sightings, color = country)) +
+  geom_point()  
+
+#hard to see, so let's facet-wrap it and let the y-axis vary:
+
+tidy.sightings.country %>% 
+  ggplot(aes(x = year, y = Sightings, color = country)) +
+  geom_point() +
+  facet_wrap(~country, scales = "free_y") +
+  theme(axis.text.x = element_blank())  #suppress x-axis labels for legibility
+
+```
+
+
+So now we've seen the use of `aggregate` and `group_by`/`summarize`.  [Note: in the Tidyverse, you always use `summarize` (which is synonymous with `summarise` if you happen to be Canadian/Kiwi/British/etc) to REDUCE the number of observations in the dataset by applying some function to them.  Here, we've counted observations per year to go from 80K observations to 87 counts of observations per year.  The dataset you get out will always be smaller than the dataset you put in.  Same with `aggregate`.  That is the whole point. ]
+
+
+# Other ways of doing the same thing...
+
+base-**R** also has a function called `split` that works by splitting your data into chunks (given some grouping variable), with the resulting object being a list, each element of which is one of your chunks. Like so:
+
+```{r}
+
+split.country <- split(sightings.by.country.year, 
+      f =sightings.by.country.year$Country, 
+      drop = T)  #drop unused levels (here, blank values for `Country`)
+
+#the result is a list with 6 elements, one for each unique value of the column `Country`
+```
+
+You can then use `apply` (and related functions) to operate on each element of the list, like so:
+
+```{r}
+lapply(split.country, FUN = nrow)  #count rows in each of the sub-datasets, which reflects the number of unique years in which sightings occurred
+
+```
+
+Note that we can create our own functions (!) and apply them using any of the above techniques.  
+
+
+### In-class exercise
+
+Perhaps we wanted to know the median length of time (in seconds) of each sighting for each country... how would we do that?
+
+```{r, echo = F ,  include = F}
+ufo %>% 
+   group_by(country) %>% 
+   mutate(duration = as.numeric(duration..seconds.)) %>%  #need to coerce duration to be a number... note the use of `mutate` here to change/create a variable, without changing the number of observations in the dataset
+   summarize(median.duration = median(duration, na.rm=T))
+
+```
+
+
+Now... tell us something we don't know about UFO sightings. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+

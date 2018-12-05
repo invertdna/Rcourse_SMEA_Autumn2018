@@ -18,7 +18,7 @@ library(tidyverse)
 
 Remember that swirling ocean of code that people create and contribute to an open-source software package like **R**?  Yeah... sometimes it can get pretty chaotic. In fact -- as in the development of spoken languages -- there can be competing styles, regional inconsistencies, and so on.  And occasionally, you get a new dialect that buds off into what could become its own language. Today we're talking about the "tidyverse", which is sort of a dialect within the universe of **R**, and it's increasingly common, so you should know about it.
 
-###History
+### History
 
 There is this guy, [Hadley Wickham](http://hadley.nz/). 
 
@@ -30,7 +30,7 @@ He is the central deity of the universe that includes **RStudio** (where he work
 He seems to have done some of this work during the course of his PhD at Iowa State University; the fact that a grad student has had such an enormous impact on the world of statistical computing is pretty darn cool.  The New York Times and many other media outlets use ggplot2 for graphics, for example; Hadley is one of its creators and also wrote the book on ggplot2.
 
 
-#The Idea
+# The Idea
 
 In New Zealandish, "tidy" means "neat" or "orderly".  And so, a tidy dataset is one that is neat, orderly, and ready to be analyzed and visualized. [You might be familiar with Hadley's peer-reviewed [paper](http://vita.had.co.nz/papers/tidy-data.html) in the *Journal of Statistical Software* on tidy data.  But then again, you may not be familiar with it.]
 
@@ -58,7 +58,7 @@ The take-home here is that:
 A side-effect of this view of the universe is, because all of the information we need is contained within the values themselves and the names of the variables for which those values are data, *we don't need row names*. 
 
 
-#Inputting Information and Piping 
+# Inputting Information and Piping 
 
 Remember calculators?  They were the first kinds of computers that non-super-nerds used all the time, and could carry around easily. Different kinds of calculators exposed really interesting questions about how people should interact with machines. In particular, should a user enter information in the way that the user thinks about it (== the way that a mathematical operation is written on paper, for example), or in the way that the computer thinks about it (which is often more efficient)?<sup><a href="#fn1" id="ref1">1</a></sup>
 
